@@ -1,0 +1,9 @@
+# Copy to `.llm-env` and fill in. Only needed for the AI "Generate / Steer /
+# Refine" features. The app runs fine without it using the baked gift catalog.
+# Keys are read by llm.js (OpenAI-compatible Groq primary, Gemini fallback).
+
+GROQ_API_KEY=your-groq-key
+GROQ_MODEL=openai/gpt-oss-120b
+
+GEMINI_API_KEY=your-gemini-key
+GEMINI_MODEL=gemini-2.0-flash

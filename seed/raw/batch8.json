@@ -1,0 +1,233 @@
+[
+  {
+    "title": "Apple AirTag (2nd Generation) - 4 Pack",
+    "descr": "Four precision item trackers that locate keys, bags, and luggage through Apple's Find My network with up to 1.5x finding range.",
+    "category": "Tech",
+    "price_cents": 9900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Apple-AirTag-2nd-Generation-Precision/dp/B0GJTXVN9Z",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0GJTXVN9Z.01.LZZZZZZZ.jpg",
+    "tags": ["myself", "dad", "friends", "anyone"],
+    "why": "The default never-lose-anything gift that every iPhone owner quietly wants."
+  },
+  {
+    "title": "Apple AirPods Pro 2 (USB-C)",
+    "descr": "Flagship wireless earbuds with 2x stronger active noise cancellation, adaptive transparency, and a hearing-aid feature.",
+    "category": "Tech",
+    "price_cents": 24900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Apple-AirPods-Pro-2nd-Generation/dp/B0CHWRXH8B",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0CHWRXH8B.01.LZZZZZZZ.jpg",
+    "tags": ["myself", "wife", "friends", "anyone"],
+    "why": "The single most-wanted Apple accessory, equally great for anyone on the list."
+  },
+  {
+    "title": "Sony WH-1000XM5 Wireless Noise-Canceling Headphones",
+    "descr": "Over-ear headphones with class-leading noise cancellation, 30-hour battery, and crisp hands-free calling.",
+    "category": "Tech",
+    "price_cents": 39800,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Sony-WH-1000XM5-Canceling-Wireless-Headphones/dp/B0C1HK9DBX",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0C1HK9DBX.01.LZZZZZZZ.jpg",
+    "tags": ["myself", "wife", "coworker", "anyone"],
+    "why": "A premium upgrade that makes flights, commutes, and open offices disappear."
+  },
+  {
+    "title": "Anker 633 MagSafe Power Bank with Stand (10,000mAh)",
+    "descr": "Foldable magnetic battery that wirelessly charges an iPhone and doubles as a kickstand with 20W USB-C passthrough.",
+    "category": "Tech",
+    "price_cents": 5999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Anker-Magnetic-Foldable-Wireless-Portable/dp/B09NRG4GK3",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B09NRG4GK3.01.LZZZZZZZ.jpg",
+    "tags": ["myself", "coworker", "friends", "anyone"],
+    "why": "A clever, snap-on charger that solves a daily annoyance for any iPhone user."
+  },
+  {
+    "title": "Logitech MX Master 3S Wireless Mouse",
+    "descr": "Ergonomic performance mouse with near-silent clicks, 8K DPI, MagSpeed scroll wheel, and track-on-glass sensing.",
+    "category": "Tech",
+    "price_cents": 9999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Logitech-Master-Performance-Ultra-Fast-Scrolling/dp/B0BS96LG8J",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0BS96LG8J.01.LZZZZZZZ.jpg",
+    "tags": ["myself", "coworker", "dad"],
+    "why": "The desk upgrade power-users rave about and rarely buy for themselves."
+  },
+  {
+    "title": "Twelve South HiRise 3 Deluxe MagSafe Charging Stand",
+    "descr": "Compact 3-in-1 stand that charges an iPhone, Apple Watch, and AirPods from a single tidy aluminum dock.",
+    "category": "Tech",
+    "price_cents": 14999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Twelve-South-Compact-MagSafe-Charging/dp/B0CV4WNKHT",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0CV4WNKHT.01.LZZZZZZZ.jpg",
+    "tags": ["myself", "wife", "dad", "anyone"],
+    "why": "Well-designed bedside charging that clears three cables off the nightstand."
+  },
+  {
+    "title": "Nanoleaf Shapes Triangles Smarter Kit (7 Panels)",
+    "descr": "Modular RGBW LED wall panels with 16M+ colors, music sync, and Thread support you can lay out in any pattern.",
+    "category": "Smart home",
+    "price_cents": 19999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Nanoleaf-Shapes-Triangles-Smarter-Panels/dp/B08N612MC8",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B08N612MC8.01.LZZZZZZZ.jpg",
+    "tags": ["myself", "friends", "anyone"],
+    "why": "Statement lighting that plugs into HomeKit and Home Assistant out of the box."
+  },
+  {
+    "title": "Govee RGBIC LED Strip Lights M1 with Matter (16.4ft)",
+    "descr": "Addressable multi-color smart light strip with Matter support that works with Apple Home, Alexa, and Google.",
+    "category": "Smart home",
+    "price_cents": 5999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Govee-Upgraded-Technology-Compatible-Christmas/dp/B0B42BWVLM",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0B42BWVLM.01.LZZZZZZZ.jpg",
+    "tags": ["myself", "friends", "anyone"],
+    "why": "An easy Matter-ready entry into smart lighting that drops into any setup."
+  },
+  {
+    "title": "Aqara Smart Home Hub M3",
+    "descr": "Matter controller and Thread border router with Zigbee, IR blaster, and native Home Assistant support.",
+    "category": "Smart home",
+    "price_cents": 12999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Aqara-Automation-Controller-Bluetooth-SmartThings/dp/B0CWLHSKYC",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0CWLHSKYC.01.LZZZZZZZ.jpg",
+    "tags": ["myself"],
+    "why": "The hub a Home Assistant tinkerer actually wants under the tree."
+  },
+  {
+    "title": "Flic 2 Smart Button 3-Pack",
+    "descr": "Programmable wireless buttons that trigger scenes, lights, and routines across 10,000+ smart-home integrations.",
+    "category": "Smart home",
+    "price_cents": 8999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Flic-3-Pack-White-Button-Expansion/dp/B084H3NNZ9",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B084H3NNZ9.01.LZZZZZZZ.jpg",
+    "tags": ["myself", "friends"],
+    "why": "Physical one-press control that makes a smart home feel effortless."
+  },
+  {
+    "title": "Ember Mug 2 (14 oz) Temperature-Control Smart Mug",
+    "descr": "App-controlled heated mug with stainless build that holds coffee or tea at your exact chosen temperature.",
+    "category": "Tech",
+    "price_cents": 14995,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Ember-Temperature-Control-Smart-Stainless/dp/B0F9FHB5TP",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0F9FHB5TP.01.LZZZZZZZ.jpg",
+    "tags": ["dad", "mom", "coworker", "anyone"],
+    "why": "The quintessential nice-to-have gadget nobody buys for themselves."
+  },
+  {
+    "title": "Fellow Stagg EKG Pro Electric Gooseneck Kettle",
+    "descr": "Precision pour-over kettle with to-the-degree temperature control, brew timer, scheduling, and an LCD dial.",
+    "category": "Tech",
+    "price_cents": 19500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Fellow-Stagg-Electric-Gooseneck-Kettle/dp/B0BF7HJ8MX",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0BF7HJ8MX.01.LZZZZZZZ.jpg",
+    "tags": ["myself", "wife", "friends"],
+    "why": "A beautifully engineered kettle that turns a coffee habit into a ritual."
+  },
+  {
+    "title": "AeroPress Original Coffee and Espresso Maker",
+    "descr": "Cult-favorite portable press that brews a smooth, low-bitterness cup three different ways in under a minute.",
+    "category": "Novel",
+    "price_cents": 3195,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/AeroPress-Coffee-Espresso-Maker-Tote/dp/B0018RY8H0",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0018RY8H0.01.LZZZZZZZ.jpg",
+    "tags": ["myself", "coworker", "friends", "anyone"],
+    "why": "An inexpensive, genuinely clever object that converts anyone into a fan."
+  },
+  {
+    "title": "Theragun Mini (2nd Generation) Massage Gun",
+    "descr": "Pocket-sized percussive massager with QuietForce tech for on-the-go deep-tissue muscle relief.",
+    "category": "Tech",
+    "price_cents": 17900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/TheraGun-Mini-Handheld-Electric-Massage/dp/B0B6QDYSG5",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0B6QDYSG5.01.LZZZZZZZ.jpg",
+    "tags": ["dad", "wife", "friends", "anyone"],
+    "why": "A compact recovery tool that feels like a luxury the moment you use it."
+  },
+  {
+    "title": "LEGO Botanicals Flower Bouquet (10280)",
+    "descr": "756-piece buildable bouquet of roses, snapdragons, and poppies that never wilts, with adjustable stems.",
+    "category": "Novel",
+    "price_cents": 5999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/LEGO-Bouquet-Building-Creative-Project/dp/B08HW1L75J",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B08HW1L75J.01.LZZZZZZZ.jpg",
+    "tags": ["wife", "mom", "friends", "anyone"],
+    "why": "A relaxing build and a permanent centerpiece in one unexpected gift."
+  },
+  {
+    "title": "Rocketbook Core Reusable Smart Notebook",
+    "descr": "Erasable, app-connected notebook that scans handwriting to the cloud and wipes clean with a damp cloth.",
+    "category": "Novel",
+    "price_cents": 2300,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Rocketbook-Innovative-Eco-Friendly-Digitally-Capabilities/dp/B06ZXWVZ3X",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B06ZXWVZ3X.01.LZZZZZZZ.jpg",
+    "tags": ["coworker", "myself", "anyone"],
+    "why": "A low-cost, cleverly designed desk object that bridges paper and digital."
+  },
+  {
+    "title": "Aura Mason WiFi Digital Picture Frame",
+    "descr": "Wirecutter's top gifting frame: send photos from your phone with free unlimited storage and no subscription.",
+    "category": "Tech",
+    "price_cents": 14999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Mason-Smart-Digital-Picture-Frame/dp/B099HC8XQ2",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B099HC8XQ2.01.LZZZZZZZ.jpg",
+    "tags": ["mom", "dad", "wife", "anyone"],
+    "why": "The rare tech gift that lands emotionally with parents and grandparents."
+  },
+  {
+    "title": "YETI Rambler 20 oz Tumbler with MagSlider Lid",
+    "descr": "Double-wall vacuum-insulated stainless tumbler with a splash-resistant magnetic slide lid.",
+    "category": "Novel",
+    "price_cents": 3500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/YETI-Rambler-Stainless-Insulated-MagSlider/dp/B0DS6M4GKL",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0DS6M4GKL.01.LZZZZZZZ.jpg",
+    "tags": ["dad", "coworker", "friends", "anyone"],
+    "why": "The safe, universally liked gift that holds up for years."
+  },
+  {
+    "title": "Bepuzzled Grounds for Murder Mystery Jigsaw Puzzle (1000 pc)",
+    "descr": "A 1000-piece puzzle paired with a short mystery story and photo, where you solve the crime as you build.",
+    "category": "Novel",
+    "price_cents": 1799,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Grounds-Murder-Mystery-Jigsaw-Puzzle/dp/B003U0C0KA",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B003U0C0KA.01.LZZZZZZZ.jpg",
+    "tags": ["friends", "wife", "anyone"],
+    "why": "An unusual twist on a classic that turns puzzle night into a whodunit."
+  },
+  {
+    "title": "Bokksu Authentic Japanese Snack Box (Gift Subscription)",
+    "descr": "Curated box of 20+ artisanal Japanese snacks and teas from centuries-old makers, with a culture guide.",
+    "category": "Experience",
+    "price_cents": 5500,
+    "retailer": "Bokksu",
+    "url": "https://www.bokksu.com/products/tasting-bokksu",
+    "image": "https://cdn.shopify.com/s/files/1/0270/4259/8257/files/Tasting-Bokksu_1200x1200.png",
+    "tags": ["friends", "coworker", "wife", "anyone"],
+    "why": "A tasting-kit experience that arrives like a tiny trip to Japan each month."
+  },
+  {
+    "title": "MasterClass Annual Membership (Gift)",
+    "descr": "A year of unlimited access to 200+ classes taught by world-class experts across cooking, writing, and more.",
+    "category": "Experience",
+    "price_cents": 12000,
+    "retailer": "MasterClass",
+    "url": "https://www.masterclass.com/gift",
+    "image": "https://www.masterclass.com/share-image.jpg",
+    "tags": ["friends", "coworker", "dad", "anyone"],
+    "why": "An experience gift that keeps giving for a full year, for any curious person."
+  }
+]

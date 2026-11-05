@@ -1,0 +1,19 @@
+services:
+  christmas:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3101:3101"
+    environment:
+      - PORT=3101
+      - NODE_ENV=production
+      - DATA_DIR=/app/data
+    env_file:
+      # optional: create .llm-env (see .llm-env.example) to enable AI features
+      - path: .llm-env
+        required: false
+    volumes:
+      - christmas-data:/app/data
+
+volumes:
+  christmas-data:

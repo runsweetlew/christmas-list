@@ -1,0 +1,200 @@
+[
+  {
+    "title": "Wera 056490 Tool-Check Plus",
+    "descr": "A 39-piece pocket set pairing the compact Zyklop Mini ratchet with BiTorsion bits and sockets for driving and wrenching in one case.",
+    "category": "Tools",
+    "price_cents": 7999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Wera-056490-Tool-Check-Ratchet-Sockets/dp/B08JMDDPG8",
+    "image": "https://hausoftools.com/cdn/shop/files/80ffc4c818e651843e0afe5c799f0a79.jpg?v=1715255656&width=1080",
+    "tags": ["dad", "myself", "friends", "anyone"],
+    "why": "The cult-favorite do-everything kit that lives in a jacket pocket."
+  },
+  {
+    "title": "Wiha 32198 Insulated SlimLine Screwdriver Set, 11-Piece",
+    "descr": "An 11-piece German-made set of 1000V VDE insulated slotted, Phillips, square, and Xeno drivers with blades about a third thinner than standard.",
+    "category": "Tools",
+    "price_cents": 9698,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Wiha-32198-Insulated-Screwdriver-11-Piece/dp/B007HGNYP8",
+    "image": "https://hausoftools.com/cdn/shop/files/32198_1_1.jpg?v=1707290545&width=1080",
+    "tags": ["dad", "myself", "coworker"],
+    "why": "Serious electrical-grade safety and precision for anyone who works on live gear."
+  },
+  {
+    "title": "Knipex 87 01 250 Cobra Water Pump Pliers, 10-Inch",
+    "descr": "Ten-inch German tongue-and-groove pliers with push-button adjustment, 25 positions, and self-locking box-joint grip up to a 2-inch capacity.",
+    "category": "Tools",
+    "price_cents": 4299,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Knipex-8701250-10-Inch-Cobra-Pliers/dp/B000X4J2H0",
+    "image": "https://hausoftools.com/cdn/shop/files/94db489729223a1faa6f3185ba9fdc69_c429848a-7e8c-4a5e-a852-a5a504aaee04.jpg?v=1718826166&width=1080",
+    "tags": ["dad", "myself", "friends", "anyone"],
+    "why": "The plier every mechanic and plumber swears by, at a stocking-stuffer price."
+  },
+  {
+    "title": "Knipex 86 03 180 Pliers Wrench, 7-1/4 Inch",
+    "descr": "A 7-1/4-inch chrome pliers wrench with smooth parallel jaws and cam-action adjustment that replaces a full set of open-end wrenches up to 1-1/2 inches.",
+    "category": "Tools",
+    "price_cents": 5781,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Knipex-8603180-7-Inch-Pliers-Wrench/dp/B000X4KP1C",
+    "image": "https://crawfordtool.com/cdn/shop/products/Knipex86031801333px_1024x.jpg?v=1627480291",
+    "tags": ["dad", "myself", "coworker"],
+    "why": "One tool that grips any fastener without rounding it off, a maker's desert-island pick."
+  },
+  {
+    "title": "Wera 05051021001 Kraftform Kompakt 20",
+    "descr": "A 7-piece bit-holding screwdriver with Rapidaptor quick-release chuck, retractable bayonet blade, in-handle bit storage, and a carry pouch.",
+    "category": "Tools",
+    "price_cents": 4015,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Wera-Kraftform-Bitholding-Screwdriver-Removable/dp/B000BK7AOS",
+    "image": "https://hausoftools.com/cdn/shop/files/824d32cec9a1b35fd715083a6d8d1f3a.jpg?v=1723593673&width=1080",
+    "tags": ["dad", "myself", "anyone"],
+    "why": "A whole screwdriver kit that collapses into one comfortable handle."
+  },
+  {
+    "title": "DeWalt 20V MAX XR DCD800P1 Brushless 1/2 in. Drill/Driver Kit",
+    "descr": "A brushless 1/2 inch drill/driver kit with a 5Ah battery, charger, and bag for everyday drilling and fastening.",
+    "category": "Tools",
+    "price_cents": 23900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/DEWALT-Brushless-Cordless-Driver-DCD800P1/dp/B09YXVCTSN",
+    "image": "https://assets.dewalt.com/NAG/PRODUCT/IMAGES/HIRES/WHITEBG/DCD800P1_K1_1680.webp",
+    "tags": ["dad", "myself", "anyone"],
+    "why": "A reliable all-purpose cordless drill that covers nearly every home project."
+  },
+  {
+    "title": "Milwaukee M12 FUEL 2504-22 1/2 in. Hammer Drill Kit",
+    "descr": "A compact M12 FUEL brushless hammer drill kit with two batteries, charger, and hard case.",
+    "category": "Tools",
+    "price_cents": 17900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Milwaukee-Electric-Tool-Drill-Driver/dp/B0BMKQMK8J",
+    "image": "https://www.milwaukeetool.com/--/web-images/sc/d628da4acb2f4e09a1a0d582189a86e0?hash=d02920bbbb347fec63ece89540bd8022&lang=en",
+    "tags": ["dad", "friends", "myself"],
+    "why": "The lightest, most compact drill in its class for tight-space work."
+  },
+  {
+    "title": "DeWalt ATOMIC 20V MAX DCF850P1 1/4 in. Impact Driver Kit",
+    "descr": "A brushless 3-speed 1/4 inch impact driver kit with battery, charger, and bag for driving screws and fasteners.",
+    "category": "Tools",
+    "price_cents": 21900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/DEWALT-DCF850P1-Brushless-Cordless-3-Speed/dp/B09MLLK9W5",
+    "image": "https://assets.dewalt.com/NAG/PRODUCT/IMAGES/HIRES/WHITEBG/DCF850P1_K1_1680.webp",
+    "tags": ["dad", "myself", "coworker"],
+    "why": "Compact, high-torque driving power for decking, framing, and furniture builds."
+  },
+  {
+    "title": "Milwaukee M12 FUEL 2557-22 3/8 in. Ratchet Kit",
+    "descr": "A cordless 3/8 inch brushless ratchet kit delivering up to 55 ft-lbs with two batteries, charger, and case.",
+    "category": "Tools",
+    "price_cents": 29900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/2557-22-Milwaukee-M12-FUEL-Ratchet/dp/B0GHKWRMSD",
+    "image": "https://www.milwaukeetool.com/--/web-images/sc/e222e909bd28445eb155d620e08aed54?hash=276052a532db1d0a68858187b549a5ec&lang=en",
+    "tags": ["dad", "friends", "myself"],
+    "why": "Replaces a pneumatic ratchet for automotive and mechanical work in tight spaces."
+  },
+  {
+    "title": "DeWalt 20V MAX XR DCN680D1 18-Gauge Brad Nailer Kit",
+    "descr": "A cordless 18-gauge brad nailer kit with no gas or compressor, including battery, charger, and contractor bag.",
+    "category": "Tools",
+    "price_cents": 36800,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/clp/B0BQL1FNFS",
+    "image": "https://assets.dewalt.com/NAG/PRODUCT/IMAGES/HIRES/WHITEBG/DCN680D1_K1_1680.webp",
+    "tags": ["dad", "myself", "anyone"],
+    "why": "Cordless trim and finish nailing with no hose or compressor to drag around."
+  },
+  {
+    "title": "Adam's Polishes Essential Car Wash Kit (14-Item)",
+    "descr": "A complete 14-piece hand-wash arsenal with car shampoo, wheel cleaner, detail spray, mitt, drying towel, and bucket for a safe scratch-free wash.",
+    "category": "Tools",
+    "price_cents": 8924,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Adams-Arsenal-Builder-Cleaning-Item/dp/B0C3SC58RM",
+    "image": "https://m.media-amazon.com/images/I/71csywxm1kL._AC_SL1500_.jpg",
+    "tags": ["dad", "myself", "friends", "anyone"],
+    "why": "Everything a car lover needs to wash it right, boxed up and ready to gift."
+  },
+  {
+    "title": "Chemical Guys Best Two-Bucket Car Wash Kit (11-Piece)",
+    "descr": "Two wash buckets with Dirt Trap inserts, chenille mitts, soap, and a drying towel for the safe two-bucket method.",
+    "category": "Tools",
+    "price_cents": 10999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Chemical-Guys-HOL121-Bucket-Items/dp/B017W5JS3K",
+    "image": "https://m.media-amazon.com/images/I/81xqFpgmTkL._AC_SL1500_.jpg",
+    "tags": ["dad", "myself", "friends", "coworker"],
+    "why": "The grit-guard two-bucket setup serious detailers swear by, in one gift box."
+  },
+  {
+    "title": "Griot's Garage Ceramic 3-in-1 Wax (22 oz)",
+    "descr": "An SiO2 spray wax that cleans, shines, and adds ceramic water-beading protection to paint, wheels, trim, and chrome in one step.",
+    "category": "Tools",
+    "price_cents": 2199,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Griots-Garage-10978-Ceramic-22oz/dp/B084F4DC92",
+    "image": "https://m.media-amazon.com/images/I/71TomTj0acL._AC_SL1500_.jpg",
+    "tags": ["dad", "myself", "friends", "anyone"],
+    "why": "Showroom gloss and real ceramic protection from a 15-minute spray-and-wipe."
+  },
+  {
+    "title": "Olight Baton4 Rechargeable EDC Flashlight (1300 Lumens)",
+    "descr": "A pocket-sized 1300-lumen rechargeable flashlight with six modes, magnetic tail, and IPX8 waterproofing for everyday carry.",
+    "category": "Tools",
+    "price_cents": 5499,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/OLIGHT-Rechargeable-Flashlight-Waterproof-Emergencies/dp/B0CHFCCZT8",
+    "image": "https://m.media-amazon.com/images/I/61muOMGrhcL._AC_SL1500_.jpg",
+    "tags": ["dad", "myself", "friends", "coworker", "anyone"],
+    "why": "Absurdly bright for its size and magnetically sticks anywhere, hands-free."
+  },
+  {
+    "title": "Tajima G-25/7.5MBW Tape Measure (25 ft)",
+    "descr": "A 25-foot dual metric and standard tape with an acrylic-coated blade and shock-resistant case built for precise, durable layout work.",
+    "category": "Tools",
+    "price_cents": 3087,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Tajima-G-25-7-5MBW-25-Feet-Standard/dp/B000K1I9WU",
+    "image": "https://m.media-amazon.com/images/I/61+-QUcthCL._AC_SL1500_.jpg",
+    "tags": ["dad", "myself", "friends", "coworker", "anyone"],
+    "why": "A cult-favorite Japanese tape that reads cleaner and lasts longer than the big-box ones."
+  },
+  {
+    "title": "Tekton 1/2-Inch Drive Split-Beam Torque Wrench (40-250 ft.-lb.) TRQ62203",
+    "descr": "A 72-tooth split-beam torque wrench that holds its setting with no spring to relax, accurate across a 40 to 250 ft-lb range.",
+    "category": "Tools",
+    "price_cents": 10625,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/TEKTON-Torque-Wrench-ft-lb-TRQ62203AMZ/dp/B0B4BFXNJ9",
+    "image": "https://m.media-amazon.com/images/I/51Tos2YqL4L._AC_SL1500_.jpg",
+    "tags": ["dad", "myself", "friends"],
+    "why": "Split-beam means no dialing down after every use, so it stays accurate for years."
+  },
+  {
+    "title": "Leatherman Wave Plus 18-in-1 Multi-Tool",
+    "descr": "Full-size stainless steel multi-tool with outside-accessible locking blades, replaceable wire cutters, and spring-action scissors.",
+    "category": "Tools",
+    "price_cents": 10395,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/LEATHERMAN-Wave-Multitool-Stainless-Steel/dp/B079MJBP21",
+    "image": "https://m.media-amazon.com/images/I/61NYfwTzS-L._AC_SL1500_.jpg",
+    "tags": ["dad", "friends", "myself", "anyone"],
+    "why": "The benchmark everyday-carry multi-tool, a lifetime gift any tinkerer actually uses."
+  },
+  {
+    "title": "Bosch GLM100-23 Blaze 100 Ft Laser Distance Measure",
+    "descr": "Pocket laser measure with a backlit display, 1/16 inch accuracy, and a 100 foot range for instant distance, area, and volume readings.",
+    "category": "Tools",
+    "price_cents": 4997,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/BOSCH-GLM100-23-Measure-Backlit-Display/dp/B0C76CPGC7",
+    "image": "https://m.media-amazon.com/images/I/518l-mjGtdL._AC_SL1000_.jpg",
+    "tags": ["dad", "myself", "coworker", "anyone"],
+    "why": "Retires the tape measure for anyone who measures rooms, projects, or materials solo."
+  }
+]

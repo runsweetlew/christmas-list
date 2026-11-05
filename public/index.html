@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Christmas List</title>
+<meta name="description" content="A quiet workshop for finding the right gift for everyone.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=6">
+</head>
+<body>
+<!-- art-glass garland band -->
+<div class="artglass" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 48 60" aria-hidden="true">
+      <polygon class="g-top" points="24,0 28,5 24,10 20,5"/>
+      <polygon class="g-tier" points="24,8 15,24 33,24"/>
+      <polygon class="g-tier" points="24,20 11,38 37,38"/>
+      <polygon class="g-tier" points="24,34 7,53 41,53"/>
+      <rect class="g-trunk" x="20.5" y="53" width="7" height="6"/>
+      <g class="g-lead">
+        <line x1="24" y1="10" x2="24" y2="53"/>
+        <line x1="15" y1="24" x2="33" y2="24"/>
+        <line x1="11" y1="38" x2="37" y2="38"/>
+      </g>
+    </svg>
+    <span class="brand-name">The Christmas&nbsp;List</span>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button data-view="list" class="tab active">People</button>
+    <button data-view="battle" class="tab">Head&#8209;to&#8209;Head</button>
+    <button data-view="shop" class="tab">List</button>
+  </nav>
+</header>
+
+<main id="app">
+  <!-- PEOPLE -->
+  <section id="view-list" class="view active">
+    <div class="hero">
+      <div class="hero-text">
+        <div class="kicker">North Pole Workshop</div>
+        <h1>Make the list.<br>Check it twice.</h1>
+        <p class="sub">A calm place to find the right gift for everyone. Play favorites head-to-head, build the list, keep an eye on the prices.</p>
+      </div>
+      <svg class="hero-tree" viewBox="0 0 48 60" aria-hidden="true">
+        <polygon class="g-top" points="24,0 28,5 24,10 20,5"/>
+        <polygon class="g-tier" points="24,8 15,24 33,24"/>
+        <polygon class="g-tier" points="24,20 11,38 37,38"/>
+        <polygon class="g-tier" points="24,34 7,53 41,53"/>
+        <rect class="g-trunk" x="20.5" y="53" width="7" height="6"/>
+        <g class="g-lead">
+          <line x1="24" y1="10" x2="24" y2="53"/>
+          <line x1="15" y1="24" x2="33" y2="24"/><line x1="11" y1="38" x2="37" y2="38"/>
+          <line x1="18" y1="24" x2="14" y2="38"/><line x1="30" y1="24" x2="34" y2="38"/>
+        </g>
+      </svg>
+    </div>
+    <div class="section-label"><span>The People</span></div>
+    <div id="people-grid" class="people-grid"></div>
+  </section>
+
+  <!-- PERSON DETAIL -->
+  <section id="view-person" class="view">
+    <button class="back" data-view="list">&larr; All people</button>
+    <div id="person-detail"></div>
+  </section>
+
+  <!-- HEAD TO HEAD -->
+  <section id="view-battle" class="view">
+    <div id="battle-wrap"></div>
+  </section>
+
+  <!-- LIST -->
+  <section id="view-shop" class="view">
+    <div class="section-label"><span>Shopping List</span></div>
+    <div id="shop-totals" class="shop-totals"></div>
+    <div id="shop-groups"></div>
+  </section>
+</main>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-card">
+    <button class="modal-close" id="modal-close">&times;</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<footer class="foot"><span>Smiling&rsquo;s our favorite.</span></footer>
+<div id="toast" class="toast" hidden></div>
+<script src="app.js?v=6"></script>
+</body>
+</html>

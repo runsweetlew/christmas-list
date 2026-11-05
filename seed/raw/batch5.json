@@ -1,0 +1,222 @@
+[
+  {
+    "title": "Lightspeed Delta Zulu ANR Aviation Headset (GA Dual Plugs)",
+    "descr": "Premium active-noise-reduction Bluetooth pilot headset with a built-in carbon monoxide detector and personalized hearing EQ.",
+    "category": "Aviation",
+    "price_cents": 129900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Lightspeed-ZuluTM-Aviation-Headset-Built/dp/B0CFNPYM6V",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0CFNPYM6V.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself"],
+    "why": "Top-tier ANR headset with a CO monitor is the single best upgrade for a working pilot."
+  },
+  {
+    "title": "David Clark H10-13.4 Passive Aviation Headset",
+    "descr": "The classic passive noise-reduction general-aviation headset trusted by pilots for decades.",
+    "category": "Aviation",
+    "price_cents": 38390,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/David-Clark-H10-13-4-Aviation-40411G-01/dp/B0HJQHKSXX",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0HJQHKSXX.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "dad", "friends"],
+    "why": "The bulletproof backup/passenger headset every flying household should own."
+  },
+  {
+    "title": "ForeFlight Sentry Mini ADS-B Receiver",
+    "descr": "Compact window-mounted dual-band ADS-B weather, traffic, and GPS receiver made specifically for ForeFlight.",
+    "category": "Aviation",
+    "price_cents": 44900,
+    "retailer": "Sporty's",
+    "url": "https://www.sportys.com/foreflight-sentry-mini-ads-b-receiver.html",
+    "image": "https://www.sportys.com/media/catalog/product/cache/aa1e99c7c52b59ff91c9edb49f6532be/s/e/sentry.jpg",
+    "tags": ["myself"],
+    "why": "Feeds live weather and traffic straight into ForeFlight on the iPad."
+  },
+  {
+    "title": "RAM Mounts X-Grip Tablet Mount with Yoke Clamp (RAM-B-121-UN8U)",
+    "descr": "Spring-loaded universal cradle for 7-8 inch tablets that clamps to an aircraft control yoke.",
+    "category": "Aviation",
+    "price_cents": 6499,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/RAM-Universal-X-Grip-Holder-Tablets/dp/B00DV0UGQY",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B00DV0UGQY.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself"],
+    "why": "Locks the iPad Mini EFB onto the yoke so it is always in the scan."
+  },
+  {
+    "title": "Flight Gear Tri-Fold Kneeboard for 9.7-11\" Tablets",
+    "descr": "Folding iPad kneeboard with pen loops and storage that keeps charts and tablet within reach in the cockpit.",
+    "category": "Aviation",
+    "price_cents": 3495,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Flight-Gear-7004-Tri-Fold-Kneeboard/dp/B0BRYNLCHF",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0BRYNLCHF.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself"],
+    "why": "Classic stocking-stuffer that organizes the EFB and notes on the leg."
+  },
+  {
+    "title": "Flight Outfitters Lift Pro 2.0 Aviation Flight Bag",
+    "descr": "Rugged pilot flight bag with padded headset compartment, tablet storage, and a high-visibility interior.",
+    "category": "Aviation",
+    "price_cents": 18995,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Flight-Outfitters-Reinforced-Aviation-Multiple/dp/B0DM64NK81",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0DM64NK81.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "friends"],
+    "why": "Purpose-built to haul headset, tablet, and gear to the ramp."
+  },
+  {
+    "title": "15 Degrees East Aeronautical VFR Sectional Chart Throw Pillow",
+    "descr": "Double-sided throw pillow printed with an authentic VFR sectional chart for aviation-themed decor.",
+    "category": "Aviation",
+    "price_cents": 2999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/15-Degrees-East-Aeronautical-Sectional/dp/B08W1TFYL7",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B08W1TFYL7.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "anyone"],
+    "why": "Subtle pilot decor that reads as a real sectional, not a cliche."
+  },
+  {
+    "title": "Cloud 9 Aviation VFR Sectional Chart Throw Blanket",
+    "descr": "Soft throw blanket printed with a real VFR sectional chart, a favorite gift for pilots.",
+    "category": "Aviation",
+    "price_cents": 4999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Cloud-Sectional-Blanket-Aviation-Attendants/dp/B0D3RWJNJ6",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0D3RWJNJ6.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "anyone"],
+    "why": "Hangar-couch and lake-cabin blanket with aviation flair."
+  },
+  {
+    "title": "Costa Del Mar Fantail 580G Polarized Sunglasses",
+    "descr": "Rugged co-injected nylon frame with Costa's scratch-resistant 580G glass polarized lenses built for the water.",
+    "category": "Boating",
+    "price_cents": 27900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Costa-Del-Mar-Rectangular-Sunglasses/dp/B088HZ6LRZ",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B088HZ6LRZ.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "dad"],
+    "why": "The go-to polarized glass for cutting glare on the lake and flats."
+  },
+  {
+    "title": "Maui Jim Peahi Polarized Wrap Sunglasses",
+    "descr": "Wrap-style polarized sunglasses with Maui Jim's color-enhancing lenses for bright on-water glare.",
+    "category": "Boating",
+    "price_cents": 28900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Maui-Jim-Peahi-Sunglasses-Polarized/dp/B003A1U63C",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B003A1U63C.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "dad"],
+    "why": "Legendary optics and coverage for full days running the boat."
+  },
+  {
+    "title": "Garmin Striker Vivid 7cv Fishfinder with GT20-TM Transducer",
+    "descr": "Easy-to-use 7-inch color fishfinder with CHIRP ClearVu sonar and vivid high-contrast color palettes.",
+    "category": "Boating",
+    "price_cents": 39999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Garmin-Fishfinder-Transducer-Scanning-010-02552-00/dp/B08LF2NML8",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B08LF2NML8.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself"],
+    "why": "Puts clear sonar imaging of the lake bottom on the boat dash."
+  },
+  {
+    "title": "Garmin inReach Mini 2 Satellite Communicator",
+    "descr": "Compact satellite communicator with two-way messaging, SOS, and GPS tracking far beyond cell coverage.",
+    "category": "Boating",
+    "price_cents": 39999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Garmin-Lightweight-Satellite-Communicator-Handheld/dp/B09PSKG7C3",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B09PSKG7C3.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "friends"],
+    "why": "Off-grid SOS and messaging for the boat, backcountry, and flying."
+  },
+  {
+    "title": "BOTE Breeze Aero 10'6\" Inflatable Paddle Board",
+    "descr": "Lightweight AeroULTRA inflatable stand-up paddle board that packs down and inflates in minutes.",
+    "category": "Boating",
+    "price_cents": 69900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/BOTE-Inflatable-MAGNEPod-Friendly-Multiple/dp/B0BKR2FV34",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0BKR2FV34.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "anyone"],
+    "why": "A durable SUP for the lakefront that stows easily at the campground."
+  },
+  {
+    "title": "St. Croix Triumph Inshore Spinning Rod 7'0\" MH/Fast",
+    "descr": "Premium SCII carbon inshore spinning rod with smooth guides and cork handle, backed by a 5-year warranty.",
+    "category": "Fishing",
+    "price_cents": 15000,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Croix-Rods-Triumph-Inshore-Spinning/dp/B09P3G476Z",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B09P3G476Z.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "dad"],
+    "why": "A real angler's rod with the warranty and feel to match."
+  },
+  {
+    "title": "Shimano Stradic FL Spinning Reel",
+    "descr": "All-around spinning reel with a rigid HAGANE metal body and smooth, durable drag.",
+    "category": "Fishing",
+    "price_cents": 22999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/SHIMANO-Stradic-Spinning-Fishing-Reel/dp/B07V5X71HT",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B07V5X71HT.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "dad"],
+    "why": "The benchmark do-everything reel that pairs with the Triumph rod."
+  },
+  {
+    "title": "YETI Tundra 45 Hard Cooler",
+    "descr": "Rotomolded one-piece ice chest with 3-inch PermaFrost insulation that holds ice for days.",
+    "category": "Camping",
+    "price_cents": 32500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/YETI-Tundra-45-Cooler/dp/B0D188RXRW",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0D188RXRW.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "anyone"],
+    "why": "The workhorse cooler for the boat, the dock, and camp."
+  },
+  {
+    "title": "YETI Hopper Flip 12 Soft Cooler",
+    "descr": "Leakproof soft-sided cooler with ColdCell insulation that holds a dozen cans cold for over a day.",
+    "category": "Camping",
+    "price_cents": 25000,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/YETI-Hopper-Flip-Soft-Cooler/dp/B0DPXYSRKJ",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0DPXYSRKJ.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "anyone"],
+    "why": "Grab-and-go cold for a day on the water or a flight-line lunch."
+  },
+  {
+    "title": "YETI Rambler 20 oz Tumbler with MagSlider Lid",
+    "descr": "Vacuum-insulated stainless tumbler with a magnetic slider lid for hot or cold drinks.",
+    "category": "Camping",
+    "price_cents": 4000,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/YETI-Rambler-20-oz-Tumbler/dp/B0G7RL7WBZ",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0G7RL7WBZ.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "anyone", "friends"],
+    "why": "The everyday tumbler that earns its place from preflight coffee to the campfire."
+  },
+  {
+    "title": "Helinox Chair One Lightweight Collapsible Camping Chair",
+    "descr": "High-performance packable camping chair that collapses to the size of a water bottle.",
+    "category": "Camping",
+    "price_cents": 10995,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Helinox-One-High-Performance-Lightweight-Collapsible/dp/B0DMP4WX3V",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B0DMP4WX3V.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "anyone", "friends"],
+    "why": "The gold-standard lightweight chair for the campground and the lakeshore."
+  },
+  {
+    "title": "Goal Zero Yeti 200X Portable Power Station",
+    "descr": "Ultra-portable 187Wh lithium power station with USB-C PD, USB-A, 12V, and a 120V AC inverter.",
+    "category": "Camping",
+    "price_cents": 29995,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/-/es/Goal-Zero-Yeti-campamento-exteriores/dp/B082VG6N78",
+    "image": "https://images-na.ssl-images-amazon.com/images/P/B082VG6N78.01._SCLZZZZZZZ_.jpg",
+    "tags": ["myself", "anyone"],
+    "why": "Keeps the EFB, phones, and camp gear charged off-grid."
+  }
+]

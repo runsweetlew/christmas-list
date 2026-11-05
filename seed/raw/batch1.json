@@ -1,0 +1,211 @@
+[
+  {
+    "title": "Fellow Stagg EKG Pro Electric Gooseneck Kettle",
+    "descr": "A precision-temperature gooseneck kettle that turns morning pour-over into a ritual worth getting up for.",
+    "category": "Coffee",
+    "price_cents": 19995,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Fellow-Stagg-Electric-Gooseneck-Kettle/dp/B0DG5X91XS",
+    "image": "https://fellowproducts.com/cdn/shop/files/Web_PDP_StaggEKGElectricKettle-Pro_Sesame_Maple_1.png?v=1773351258&width=2000",
+    "tags": ["wife", "mom", "myself", "anyone"],
+    "why": "For the coffee lover who treats their morning brew like a craft."
+  },
+  {
+    "title": "Our Place Always Pan 2.0",
+    "descr": "A gorgeous ceramic nonstick pan that replaces eight pieces of cookware and looks great left on the stove.",
+    "category": "Kitchen",
+    "price_cents": 15000,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Our-Place-2-0-10-5-Inch-Toxin-Free-Lightweight/dp/B0C6SPHV19",
+    "image": "https://fromourplace.com/cdn/shop/files/AP_Mini_Expanded.png?height=1100&v=1675797514&width=767",
+    "tags": ["wife", "mom", "friends", "anyone"],
+    "why": "For anyone setting up or upgrading a kitchen who loves good design."
+  },
+  {
+    "title": "Zojirushi Stainless Steel Travel Mug with Tea Leaf Filter (16 oz)",
+    "descr": "A vacuum-insulated mug with a built-in tea filter that keeps a brew hot for hours on the go.",
+    "category": "Tea",
+    "price_cents": 3500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Zojirushi-SM-JTE46AD-Stainless-Travel-16-Ounce/dp/B00C4OE79K",
+    "image": "https://store.zojirushi.com/cdn/shop/files/r-_0002s_0002_SM-JTE46PX.png?v=1752785889&width=1946",
+    "tags": ["coworker", "dad", "friends", "anyone"],
+    "why": "For the commuter who steeps loose-leaf tea or coffee on the move."
+  },
+  {
+    "title": "Breville Smart Grinder Pro",
+    "descr": "A conical burr grinder with 60 settings that unlocks cafe-quality coffee from espresso to French press.",
+    "category": "Coffee",
+    "price_cents": 19995,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Breville-BCG820BSSXL-Grinder-Brushed-Stainless/dp/B00OXGXW8O",
+    "image": "https://assets.breville.com/cdn-cgi/image/width=1300,format=auto,quality=75/BCG820/BCG820BSSXL/pdp_1300px.png",
+    "tags": ["dad", "myself", "friends", "anyone"],
+    "why": "For the serious home barista who wants a fresh, consistent grind."
+  },
+  {
+    "title": "Nespresso Vertuo Next by De'Longhi with Milk Frother",
+    "descr": "A slim one-touch machine that pulls espresso and full-size coffee plus steams milk for lattes at home.",
+    "category": "Coffee",
+    "price_cents": 17900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Nespresso-DeLonghi-ENV120WAE-Espresso-Aeroccino/dp/B084GYKJ58",
+    "image": "https://dam.delonghi.com/902x902/assets/194889",
+    "tags": ["wife", "mom", "coworker", "anyone"],
+    "why": "For the busy household that wants cafe drinks without the fuss."
+  },
+  {
+    "title": "Great Jones The Dutchess 6.75 Qt Enameled Cast Iron Dutch Oven",
+    "descr": "A heirloom-grade enameled Dutch oven that makes bread, braises and soups look as good as they taste.",
+    "category": "Kitchen",
+    "price_cents": 16500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Great-Jones-Dutchess-Cast-Dutch/dp/B0F4D999PK",
+    "image": "https://greatjonesgoods.com/cdn/shop/products/dutchess_45_01-green_375x375@2x.png?v=1697667565",
+    "tags": ["wife", "mom", "myself", "anyone"],
+    "why": "For the home cook who loves slow Sunday braises and crusty bread."
+  },
+  {
+    "title": "Microplane Premium Classic Zester / Grater",
+    "descr": "The razor-sharp zester every great cook reaches for daily, for citrus, hard cheese, ginger and chocolate.",
+    "category": "Kitchen",
+    "price_cents": 1695,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Microplane-46020-Grater-Made-Cheese-Soft-Handle-Black/dp/B00151WA06",
+    "image": "https://microplane.com/cdn/shop/products/40020-image-edit.jpg?v=1708736721&width=1200",
+    "tags": ["mom", "coworker", "friends", "anyone"],
+    "why": "An affordable stocking-stuffer that any cook will actually use."
+  },
+  {
+    "title": "OXO Good Grips Cold Brew Coffee Maker (32 oz)",
+    "descr": "A countertop brewer that makes a week of smooth, low-acid cold brew concentrate with one easy switch.",
+    "category": "Coffee",
+    "price_cents": 5195,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/OXO-Grips-Ounce-Coffee-Compact/dp/B0CBMR4BLT",
+    "image": "https://cdn.everythingkitchens.com/media/catalog/product/cache/1e92cb92f6cdc27d285ff0da8b2b8583/1/2/1272880_-_oxo_good_grips_cold_brew_coffee_maker_32_oz_2_.jpg",
+    "tags": ["coworker", "friends", "myself", "anyone"],
+    "why": "For the iced-coffee devotee who wants cafe cold brew at home."
+  },
+  {
+    "title": "Vitamix E310 Explorian Blender",
+    "descr": "A professional-grade blender that crushes smoothies, soups and nut butters and self-cleans in a minute.",
+    "category": "Kitchen",
+    "price_cents": 34995,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Vitamix-E310-Explorian-Professional-Grade-Container/dp/B0758JHZM3",
+    "image": "https://cdn.everythingkitchens.com/media/catalog/product/cache/1e92cb92f6cdc27d285ff0da8b2b8583/e/3/e310_black_rglam_48oz_022.jpeg",
+    "tags": ["mom", "wife", "myself", "anyone"],
+    "why": "For the health-minded cook who wants a blender that lasts for decades."
+  },
+  {
+    "title": "Nordic Ware Anniversary Bundt Pan (12 Cup, Gold)",
+    "descr": "A heavy cast-aluminum Bundt pan whose fluted design turns any cake into a showstopper.",
+    "category": "Baking",
+    "price_cents": 3800,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/clp/B0CTXB38Q1",
+    "image": "https://cdn11.bigcommerce.com/s-x58in4vio5/products/281/images/1033/50077_anniversary_bundt_pan__80016.1756919510.1280.1280.jpg?c=1",
+    "tags": ["mom", "wife", "friends", "anyone"],
+    "why": "For the baker who loves a cake that looks as good as it tastes."
+  },
+  {
+    "title": "VAHDAM Assorted Tea Sampler Gift Set (24 Pyramid Teabags)",
+    "descr": "A beautifully boxed sampler of black, green and herbal teas, a ready-to-gift taste tour for tea lovers.",
+    "category": "Tea",
+    "price_cents": 1999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/VAHDAM-Organic-Assorted-Bags-Sampler/dp/B097HLWC93",
+    "image": "https://www.vahdam.com/cdn/shop/files/Assorted_Tea_sampler_0273fc8a-abe4-4fd7-9f2f-c6575401f7c9.jpg?v=1764363324&width=1000",
+    "tags": ["coworker", "mom", "friends", "anyone"],
+    "why": "A safe, lovely gift for a coworker or any tea drinker."
+  },
+  {
+    "title": "Stasher Reusable Silicone Storage Bags, 4-Pack Starter Kit",
+    "descr": "Leakproof platinum-silicone bags that replace single-use plastic for storing, sous vide and freezing.",
+    "category": "Kitchen",
+    "price_cents": 4999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Stasher-Premium-Reusable-Silicone-Storage/dp/B0DY9D451J",
+    "image": "https://www.stasherbag.com/cdn/shop/files/Hero-Gallon-2-Pack-Bundle-Clear.jpg?crop=center&height=1149&v=1781807536&width=1149",
+    "tags": ["mom", "coworker", "friends", "anyone"],
+    "why": "A practical, eco-minded gift for anyone who cooks and stores food."
+  },
+  {
+    "title": "Chemex Pour-Over Glass Coffeemaker, Classic Series, 6-Cup",
+    "descr": "An iconic 1941 hourglass brewer that makes clean, bright pour-over coffee and doubles as kitchen sculpture.",
+    "category": "Coffee",
+    "price_cents": 4895,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Chemex-Glass-Handle-Pour-over-Coffeemaker/dp/B0036YFTO4",
+    "image": "https://www.espressoparts.com/cdn/shop/products/chemex-classic-6cup_2_1024x.jpg?v=1783619370",
+    "tags": ["friends", "myself", "dad", "anyone"],
+    "why": "For the design-minded coffee drinker who loves a manual ritual."
+  },
+  {
+    "title": "Ember Temperature Control Smart Mug (10 oz)",
+    "descr": "An app-controlled heated mug that keeps coffee or tea at your exact perfect temperature, sip after sip.",
+    "category": "Coffee",
+    "price_cents": 8999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Ember-Temperature-Control-Mug-White/dp/B0773WG6NK",
+    "image": "https://scdn.speedsize.com/c2fd7a9b-205f-4207-98ab-77d0b1777975/cdn.shopify.com/s/files/1/1080/6594/files/Ember_Ortho_F_Black.png?v=1788104822",
+    "tags": ["coworker", "dad", "wife", "anyone"],
+    "why": "A splurgy gadget for the desk worker who lets coffee go cold."
+  },
+  {
+    "title": "Caraway Nonstick Ceramic Cookware Set (12 Piece)",
+    "descr": "A toxin-free ceramic cookware set with pots, pans and clever storage racks that looks stunning in the kitchen.",
+    "category": "Kitchen",
+    "price_cents": 29500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Caraway-Nonstick-Ceramic-Cookware-Kitchen/dp/B0CGS1J9P6",
+    "image": "https://cdn.shopify.com/s/files/1/0258/6273/3906/files/cookware-sets_cream_hero.jpg?v=1782881447",
+    "tags": ["wife", "mom", "anyone"],
+    "why": "A big-gesture gift for a newlywed or anyone upgrading their kitchen."
+  },
+  {
+    "title": "Hydro Flask 32 oz Wide Mouth Water Bottle",
+    "descr": "A vacuum-insulated stainless bottle that keeps drinks cold for 24 hours and hot for 12, built to last.",
+    "category": "Kitchen",
+    "price_cents": 4495,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Hydro-Flask-W32BTS618-Water-Bottle/dp/B08XRQF3DW",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/9/9e/HydroFlask_Insulated_Bottle_%2829133242351%29.jpg",
+    "tags": ["coworker", "friends", "dad", "anyone"],
+    "why": "A universally useful gift for the always-on-the-go person."
+  },
+  {
+    "title": "Le Creuset Stoneware Mug, Set of 4 (14 oz)",
+    "descr": "Durable, oven-safe stoneware mugs in signature glazes that bring color and heft to the morning cup.",
+    "category": "Kitchen",
+    "price_cents": 10000,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Creuset-PG90433A-0017-Stoneware-Mug-Caribbean/dp/B082LJX469",
+    "image": "https://cdn.everythingkitchens.com/media/catalog/product/cache/1e92cb92f6cdc27d285ff0da8b2b8583/p/g/pg90433a-0016a.jpg",
+    "tags": ["wife", "mom", "friends", "anyone"],
+    "why": "For the host who loves a beautiful, substantial coffee mug."
+  },
+  {
+    "title": "King Arthur Gluten-Free Chocolate Chip Cookie Mix",
+    "descr": "A trusted bakery-quality mix that makes soft, chewy cookies everyone loves, no special pantry required.",
+    "category": "Baking",
+    "price_cents": 1299,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/King-Arthur-Gluten-Free-Cookie/dp/B00CJ8KLH8",
+    "image": "https://cdn11.bigcommerce.com/s-ihwnd7z21q/products/1943/images/9960/400259__83433.1777641707.386.513.jpg?c=1",
+    "tags": ["coworker", "friends", "anyone"],
+    "why": "A warm, low-cost gift or add-on for any baker or neighbor."
+  },
+  {
+    "title": "Opinel Intempora No. 218 Chef Knife (8 inch)",
+    "descr": "A full-tang French chef knife with Sandvik steel and a comfortable handle, a real upgrade for everyday cooking.",
+    "category": "Kitchen",
+    "price_cents": 6500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/clp/B07Q51MR4X",
+    "image": "https://www.opinel-usa.com/cdn/shop/products/Intempora-8-Chef-Knife-Large-Kitchen-Knife_1200x.jpg?v=1785270814",
+    "tags": ["dad", "myself", "friends", "anyone"],
+    "why": "For the home cook ready to graduate to one great knife."
+  }
+]

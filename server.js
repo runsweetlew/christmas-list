@@ -1,0 +1,378 @@
+'use strict';
+const path = require('path');
+const express = require('express');
+const { db } = require('./db');
+const { seedIfEmpty } = require('./seed/seed');
+const { generateIdeas, amazonSearch } = require('./llm');
+const { resolveMany } = require('./bing_img');
+
+const PORT = process.env.PORT || 3101;
+const PUBLIC_DIR = path.join(__dirname, 'public');
+
+seedIfEmpty(db);
+
+const app = express();
+app.use(express.json({ limit: '2mb' }));
+app.use(express.static(PUBLIC_DIR, { maxAge: '5m' }));
+
+const nowIso = () => new Date().toISOString();
+const num = (v, d) => { const n = parseInt(v, 10); return isNaN(n) ? d : n; };
+const str = (v, n) => String(v == null ? '' : v).slice(0, n);
+
+// ---- prepared statements ----
+const Q = {
+  recipients: db.prepare('SELECT * FROM recipients ORDER BY sort, id'),
+  recipient: db.prepare('SELECT * FROM recipients WHERE id = ?'),
+  insRecipient: db.prepare(`INSERT INTO recipients
+    (name, relationship, emoji, age, gender, keywords, wishlist, feedback, budget_min, budget_max, sort, created, updated)
+    VALUES (@name,@relationship,@emoji,@age,@gender,@keywords,@wishlist,@feedback,@budget_min,@budget_max,@sort,@created,@updated)`),
+  updRecipient: db.prepare(`UPDATE recipients SET
+    name=@name, relationship=@relationship, emoji=@emoji, age=@age, gender=@gender,
+    keywords=@keywords, wishlist=@wishlist, feedback=@feedback, budget_min=@budget_min, budget_max=@budget_max, updated=@updated
+    WHERE id=@id`),
+  appendFeedback: db.prepare(`UPDATE recipients SET feedback=@feedback, updated=@updated WHERE id=@id`),
+  delRecipient: db.prepare('DELETE FROM recipients WHERE id = ?'),
+  delRecipientIdeas: db.prepare('DELETE FROM ideas WHERE recipient_id = ?'),
+  delRecipientPrices: db.prepare('DELETE FROM price_history WHERE idea_id IN (SELECT id FROM ideas WHERE recipient_id = ?)'),
+
+  ideasFor: db.prepare('SELECT * FROM ideas WHERE recipient_id = ? ORDER BY rating DESC, id'),
+  idea: db.prepare('SELECT * FROM ideas WHERE id = ?'),
+  insIdea: db.prepare(`INSERT INTO ideas
+    (recipient_id, title, descr, category, est_price, retailer, search_url, product_url, image, source, why, created, updated)
+    VALUES (@recipient_id,@title,@descr,@category,@est_price,@retailer,@search_url,@product_url,@image,@source,@why,@created,@updated)`),
+  titlesFor: db.prepare('SELECT title FROM ideas WHERE recipient_id = ?'),
+  updRating: db.prepare('UPDATE ideas SET rating=@rating, battles=battles+1, updated=@updated WHERE id=@id'),
+  setRatingExact: db.prepare('UPDATE ideas SET rating=@rating, battles=@battles, updated=@updated WHERE id=@id'),
+  setStatus: db.prepare('UPDATE ideas SET status=@status, updated=@updated WHERE id=@id'),
+  updIdea: db.prepare(`UPDATE ideas SET
+    product_url=@product_url, target_price=@target_price, last_price=@last_price,
+    purchased_price=@purchased_price, notes=@notes, est_price=@est_price, status=@status, updated=@updated
+    WHERE id=@id`),
+  delIdea: db.prepare('DELETE FROM ideas WHERE id = ?'),
+  delIdeaPrices: db.prepare('DELETE FROM price_history WHERE idea_id = ?'),
+
+  prices: db.prepare('SELECT ts, price, ok, source FROM price_history WHERE idea_id = ? ORDER BY ts'),
+  insPrice: db.prepare('INSERT INTO price_history (idea_id, ts, price, ok, source) VALUES (?,?,?,?,?)'),
+  setLastPrice: db.prepare('UPDATE ideas SET last_price=?, updated=? WHERE id=?'),
+
+  counts: db.prepare(`SELECT
+      SUM(CASE WHEN status IN ('active','hidden') THEN 1 ELSE 0 END) AS ideas,
+      SUM(CASE WHEN status='active' THEN 1 ELSE 0 END) AS active,
+      SUM(CASE WHEN status='listed' THEN 1 ELSE 0 END) AS listed,
+      SUM(CASE WHEN status='purchased' THEN 1 ELSE 0 END) AS purchased,
+      SUM(CASE WHEN status='listed' THEN COALESCE(last_price, est_price) ELSE 0 END) AS listed_total,
+      SUM(CASE WHEN status='purchased' THEN COALESCE(purchased_price, last_price, est_price) ELSE 0 END) AS spent
+    FROM ideas WHERE recipient_id = ?`)
+};
+
+function recipientPayload(r) {
+  const c = Q.counts.get(r.id) || {};
+  return { ...r, counts: {
+    ideas: c.ideas || 0, active: c.active || 0, listed: c.listed || 0,
+    purchased: c.purchased || 0, listed_total: c.listed_total || 0, spent: c.spent || 0
+  } };
+}
+
+// ---- recipients ----
+app.get('/api/state', (req, res) => {
+  const recipients = Q.recipients.all().map(recipientPayload);
+  res.json({ recipients });
+});
+
+app.get('/api/recipients/:id', (req, res) => {
+  const r = Q.recipient.get(num(req.params.id));
+  if (!r) return res.status(404).json({ error: 'not found' });
+  const ideas = Q.ideasFor.all(r.id);
+  res.json({ recipient: recipientPayload(r), ideas });
+});
+
+function cleanRecipient(body) {
+  return {
+    name: str(body.name, 60) || 'Someone',
+    relationship: str(body.relationship, 60),
+    emoji: str(body.emoji, 8) || '🎁',
+    age: str(body.age, 30),
+    gender: str(body.gender, 30),
+    keywords: str(body.keywords, 800),
+    wishlist: str(body.wishlist, 1500),
+    feedback: str(body.feedback, 2000),
+    budget_min: Math.max(0, num(body.budget_min, 0)),
+    budget_max: Math.max(100, num(body.budget_max, 20000))
+  };
+}
+
+app.post('/api/recipients', (req, res) => {
+  const c = cleanRecipient(req.body || {});
+  const ts = nowIso();
+  const maxSort = db.prepare('SELECT COALESCE(MAX(sort),0)+1 AS s FROM recipients').get().s;
+  const r = Q.insRecipient.run({ ...c, sort: maxSort, created: ts, updated: ts });
+  res.json({ recipient: recipientPayload(Q.recipient.get(r.lastInsertRowid)) });
+});
+
+app.put('/api/recipients/:id', (req, res) => {
+  const r = Q.recipient.get(num(req.params.id));
+  if (!r) return res.status(404).json({ error: 'not found' });
+  const c = cleanRecipient(req.body || {});
+  // preserve accumulated feedback unless explicitly provided
+  if (req.body.feedback === undefined) c.feedback = r.feedback || '';
+  Q.updRecipient.run({ ...c, id: r.id, updated: nowIso() });
+  res.json({ recipient: recipientPayload(Q.recipient.get(r.id)) });
+});
+
+app.delete('/api/recipients/:id', (req, res) => {
+  const id = num(req.params.id);
+  const tx = db.transaction(() => {
+    Q.delRecipientPrices.run(id);
+    Q.delRecipientIdeas.run(id);
+    Q.delRecipient.run(id);
+  });
+  tx();
+  res.json({ ok: true });
+});
+
+// ---- idea generation (shared) ----
+async function runGeneration(r, rounds, liked) {
+  rounds = Math.min(8, Math.max(1, rounds || 1));
+  const seen = new Set(Q.titlesFor.all(r.id).map((x) => x.title.toLowerCase()));
+  const ts = nowIso();
+  let added = 0, provider = 'none', lastError = null;
+  // Run all rounds concurrently so N rounds take ~1 call of latency instead of N.
+  const avoid = Array.from(seen);
+  const results = await Promise.all(Array.from({ length: rounds }, () => generateIdeas(r, avoid, liked)));
+  const all = [];
+  for (const { ideas, provider: p, error } of results) {
+    if (p && p !== 'none') provider = p;
+    if (error) lastError = error;
+    if (ideas && ideas.length) all.push(...ideas);
+  }
+  // dedup against what the recipient already has / within this batch
+  const fresh = [];
+  for (const it of all) { const k = it.title.toLowerCase(); if (seen.has(k)) continue; seen.add(k); fresh.push(it); }
+  // give the generated ideas real product photos too (best-effort, concurrent)
+  let imgMap = new Map();
+  try { imgMap = await resolveMany(fresh.map((f) => f.title), 6); } catch (e) { /* ignore */ }
+  const insertTx = db.transaction(() => {
+    for (const it of fresh) {
+      Q.insIdea.run({
+        recipient_id: r.id, title: it.title, descr: it.descr, category: it.category,
+        est_price: it.est_price, retailer: it.retailer, search_url: it.search_url, product_url: '',
+        image: imgMap.get(it.title) || '', source: it.source || 'ai', why: it.why, created: ts, updated: ts
+      });
+      added++;
+    }
+  });
+  insertTx();
+  return { added, provider, error: added ? null : lastError };
+}
+
+app.post('/api/recipients/:id/generate', async (req, res) => {
+  const r = Q.recipient.get(num(req.params.id));
+  if (!r) return res.status(404).json({ error: 'not found' });
+  const rounds = num(req.body && req.body.rounds, 1);
+  const out = await runGeneration(r, rounds);
+  res.json({ ...out, ideas: Q.ideasFor.all(r.id) });
+});
+
+// ---- refine: keep the top 25% by Elo, retire the rest, breed fresh ideas from the winners ----
+app.post('/api/recipients/:id/refine', async (req, res) => {
+  const r = Q.recipient.get(num(req.params.id));
+  if (!r) return res.status(404).json({ error: 'not found' });
+  const active = Q.ideasFor.all(r.id).filter((i) => i.status === 'active'); // ordered by rating desc
+  if (active.length < 4) return res.status(400).json({ error: 'not enough ideas to refine yet, battle a few first' });
+  const pct = Math.min(0.9, Math.max(0.1, Number(req.body && req.body.pct) || 0.25));
+  const keepN = Math.max(5, Math.ceil(active.length * pct));
+  const keep = active.slice(0, keepN);
+  const retire = active.slice(keepN);
+  const ts = nowIso();
+  db.transaction(() => { for (const it of retire) Q.setStatus.run({ id: it.id, status: 'hidden', updated: ts }); })();
+  // remember the lean so future generations stay on-taste
+  const topCats = [...new Set(keep.map((i) => i.category).filter(Boolean))].slice(0, 8).join(', ');
+  if (topCats) {
+    const merged = ((r.feedback ? r.feedback + ' | ' : '') + 'Winners lean toward: ' + topCats).slice(-2000);
+    Q.appendFeedback.run({ id: r.id, feedback: merged, updated: ts });
+  }
+  const liked = keep.map((i) => i.title + (i.category ? ' (' + i.category + ')' : ''));
+  const fresh = Q.recipient.get(r.id);
+  const rounds = num(req.body && req.body.rounds, 3);
+  const out = await runGeneration(fresh, rounds, liked);
+  res.json({ kept: keep.length, retired: retire.length, ...out, recipient: recipientPayload(fresh), ideas: Q.ideasFor.all(r.id) });
+});
+
+// ---- head-to-head feedback: steer the profile, pull in fresh matching ideas ----
+app.post('/api/recipients/:id/feedback', async (req, res) => {
+  const r = Q.recipient.get(num(req.params.id));
+  if (!r) return res.status(404).json({ error: 'not found' });
+  const text = str(req.body && req.body.text, 600).trim();
+  if (!text) return res.status(400).json({ error: 'feedback text required' });
+  // append to the profile's accumulated feedback (most recent last, capped)
+  const merged = ((r.feedback ? r.feedback + ' | ' : '') + text).slice(-2000);
+  Q.appendFeedback.run({ id: r.id, feedback: merged, updated: nowIso() });
+  const fresh = Q.recipient.get(r.id);
+  const rounds = num(req.body && req.body.rounds, 3);
+  const out = await runGeneration(fresh, rounds);
+  res.json({ ...out, recipient: recipientPayload(fresh), ideas: Q.ideasFor.all(r.id) });
+});
+
+// custom manual idea
+app.post('/api/recipients/:id/ideas', (req, res) => {
+  const r = Q.recipient.get(num(req.params.id));
+  if (!r) return res.status(404).json({ error: 'not found' });
+  const b = req.body || {};
+  const ts = nowIso();
+  const title = str(b.title, 140);
+  if (!title) return res.status(400).json({ error: 'title required' });
+  const q = str(b.search_query || b.title, 140);
+  const r2 = Q.insIdea.run({
+    recipient_id: r.id, title, descr: str(b.descr, 300), category: str(b.category, 60),
+    est_price: Math.max(0, num(b.est_price, 0)), retailer: str(b.retailer, 40) || 'Amazon',
+    search_url: /^https?:\/\//i.test(b.search_url) ? b.search_url : amazonSearch(q),
+    product_url: /^https?:\/\//i.test(b.search_url) ? str(b.search_url, 600) : '',
+    image: /^https?:\/\//i.test(b.image) ? str(b.image, 600) : '', source: 'custom', why: str(b.why, 240), created: ts, updated: ts
+  });
+  res.json({ idea: Q.idea.get(r2.lastInsertRowid) });
+});
+
+// ---- head to head (elo) ----
+function elo(ra, rb, aWon, k = 40) {
+  const ea = 1 / (1 + Math.pow(10, (rb - ra) / 400));
+  const eb = 1 - ea;
+  return [ra + k * ((aWon ? 1 : 0) - ea), rb + k * ((aWon ? 0 : 1) - eb)];
+}
+
+app.post('/api/battle', (req, res) => {
+  const b = req.body || {};
+  const ts = nowIso();
+  // "neither": both options rejected, both lose rating (penalized vs an implied better gift)
+  if (b.neither) {
+    const a = Q.idea.get(num(b.aId)), c = Q.idea.get(num(b.bId));
+    if (!a || !c) return res.status(400).json({ error: 'bad ids' });
+    const PEN = 28;
+    const na = a.rating - PEN, nc = c.rating - PEN;
+    Q.updRating.run({ id: a.id, rating: na, updated: ts });
+    Q.updRating.run({ id: c.id, rating: nc, updated: ts });
+    return res.json({ ok: true, neither: true, a: { id: a.id, rating: na }, b: { id: c.id, rating: nc } });
+  }
+  const w = Q.idea.get(num(b.winnerId));
+  const l = Q.idea.get(num(b.loserId));
+  if (!w || !l) return res.status(400).json({ error: 'bad ids' });
+  const [nw, nl] = elo(w.rating, l.rating, true);
+  Q.updRating.run({ id: w.id, rating: nw, updated: ts });
+  Q.updRating.run({ id: l.id, rating: nl, updated: ts });
+  res.json({ ok: true, winner: { id: w.id, rating: nw }, loser: { id: l.id, rating: nl } });
+});
+
+// ---- undo a rating decision: restore exact ratings/battles ----
+app.post('/api/battle/undo', (req, res) => {
+  const items = (req.body && req.body.items) || [];
+  if (!Array.isArray(items) || !items.length) return res.status(400).json({ error: 'no items' });
+  const ts = nowIso();
+  const tx = db.transaction(() => {
+    for (const it of items) {
+      const id = num(it.id);
+      if (!id) continue;
+      Q.setRatingExact.run({ id, rating: Number(it.rating) || 1500, battles: Math.max(0, num(it.battles, 0)), updated: ts });
+    }
+  });
+  tx();
+  res.json({ ok: true });
+});
+
+// ---- status changes: favorite / hide / purchase / unlist ----
+app.post('/api/ideas/:id/status', (req, res) => {
+  const it = Q.idea.get(num(req.params.id));
+  if (!it) return res.status(404).json({ error: 'not found' });
+  const b = req.body || {};
+  const status = str(b.status, 20);
+  if (!['active', 'hidden', 'listed', 'purchased'].includes(status)) {
+    return res.status(400).json({ error: 'bad status' });
+  }
+  const ts = nowIso();
+  const payload = {
+    id: it.id, status, updated: ts,
+    product_url: it.product_url, target_price: it.target_price, last_price: it.last_price,
+    purchased_price: it.purchased_price, notes: it.notes, est_price: it.est_price
+  };
+  if (status === 'listed') {
+    if (b.product_url !== undefined) payload.product_url = /^https?:\/\//i.test(b.product_url) ? str(b.product_url, 600) : '';
+    if (b.target_price !== undefined) payload.target_price = b.target_price === null ? null : Math.max(0, num(b.target_price, 0));
+    // seed a first price point from estimate so the graph has an anchor
+    if (!it.last_price && it.est_price) {
+      payload.last_price = it.est_price;
+      Q.insPrice.run(it.id, ts, it.est_price, 1, 'estimate');
+    }
+  }
+  if (status === 'purchased') {
+    payload.purchased_price = b.purchased_price !== undefined ? Math.max(0, num(b.purchased_price, it.last_price || it.est_price || 0)) : (it.purchased_price || it.last_price || it.est_price || 0);
+  }
+  Q.updIdea.run(payload);
+  res.json({ idea: Q.idea.get(it.id) });
+});
+
+// update idea fields (url, target, notes, est_price)
+app.put('/api/ideas/:id', (req, res) => {
+  const it = Q.idea.get(num(req.params.id));
+  if (!it) return res.status(404).json({ error: 'not found' });
+  const b = req.body || {};
+  const ts = nowIso();
+  const payload = {
+    id: it.id, status: it.status, updated: ts,
+    product_url: b.product_url !== undefined ? (/^https?:\/\//i.test(b.product_url) ? str(b.product_url, 600) : '') : it.product_url,
+    target_price: b.target_price !== undefined ? (b.target_price === null || b.target_price === '' ? null : Math.max(0, num(b.target_price, 0))) : it.target_price,
+    last_price: it.last_price,
+    purchased_price: b.purchased_price !== undefined ? Math.max(0, num(b.purchased_price, 0)) : it.purchased_price,
+    notes: b.notes !== undefined ? str(b.notes, 600) : it.notes,
+    est_price: b.est_price !== undefined ? Math.max(0, num(b.est_price, 0)) : it.est_price
+  };
+  Q.updIdea.run(payload);
+  res.json({ idea: Q.idea.get(it.id) });
+});
+
+app.delete('/api/ideas/:id', (req, res) => {
+  const id = num(req.params.id);
+  const tx = db.transaction(() => { Q.delIdeaPrices.run(id); Q.delIdea.run(id); });
+  tx();
+  res.json({ ok: true });
+});
+
+// ---- price watch ----
+app.get('/api/ideas/:id/prices', (req, res) => {
+  const it = Q.idea.get(num(req.params.id));
+  if (!it) return res.status(404).json({ error: 'not found' });
+  res.json({ idea: it, prices: Q.prices.all(it.id) });
+});
+
+// manually log a price point
+app.post('/api/ideas/:id/price', (req, res) => {
+  const it = Q.idea.get(num(req.params.id));
+  if (!it) return res.status(404).json({ error: 'not found' });
+  const price = Math.max(0, num(req.body && req.body.price, 0));
+  if (!price) return res.status(400).json({ error: 'price required (cents)' });
+  const ts = nowIso();
+  Q.insPrice.run(it.id, ts, price, 1, 'manual');
+  Q.setLastPrice.run(price, ts, it.id);
+  res.json({ ok: true, idea: Q.idea.get(it.id) });
+});
+
+// ---- shopping list ----
+app.get('/api/shopping-list', (req, res) => {
+  const recipients = Q.recipients.all();
+  const out = [];
+  let grandListed = 0, grandSpent = 0;
+  for (const r of recipients) {
+    const items = Q.ideasFor.all(r.id).filter((i) => i.status === 'listed' || i.status === 'purchased');
+    if (!items.length) continue;
+    const listed = items.filter((i) => i.status === 'listed')
+      .reduce((s, i) => s + (i.last_price || i.est_price || 0), 0);
+    const spent = items.filter((i) => i.status === 'purchased')
+      .reduce((s, i) => s + (i.purchased_price || i.last_price || i.est_price || 0), 0);
+    grandListed += listed; grandSpent += spent;
+    out.push({ recipient: recipientPayload(r), items, listed, spent });
+  }
+  res.json({ groups: out, grandListed, grandSpent });
+});
+
+app.get('/api/health', (req, res) => res.json({ ok: true }));
+
+app.get('*', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'index.html')));
+
+app.listen(PORT, () => console.log(`🎄 christmas gift finder on :${PORT}`));

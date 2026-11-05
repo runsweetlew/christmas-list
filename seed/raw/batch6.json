@@ -1,0 +1,222 @@
+[
+  {
+    "title": "Garmin Forerunner 265",
+    "descr": "AMOLED GPS running smartwatch with daily training readiness, recovery, and HRV insights.",
+    "category": "Fitness",
+    "price_cents": 44999,
+    "retailer": "Fleet Feet",
+    "url": "https://www.fleetfeet.com/products/garmin-forerunner-265",
+    "image": "https://cdn.fleetfeet.com/a:1.3333333333333-f:cover-w:1000/assets/forerunner265-lifestyle.jpg?s=b4747a53",
+    "tags": ["myself", "dad", "anyone"],
+    "why": "The data-driven training watch for a runner who lives in his metrics."
+  },
+  {
+    "title": "Garmin Forerunner 965",
+    "descr": "Premium GPS triathlon smartwatch with a bright AMOLED display and full-color maps.",
+    "category": "Fitness",
+    "price_cents": 59999,
+    "retailer": "Garmin",
+    "url": "https://www.garmin.com/en-US/p/886725",
+    "image": "https://res.garmin.com/en/products/010-02809-00/g/cf-lg.jpg",
+    "tags": ["myself", "dad"],
+    "why": "Top-tier Forerunner for the serious runner who wants maps and the longest battery."
+  },
+  {
+    "title": "COROS Pace 3",
+    "descr": "Ultralight 30g GPS sport watch with dual-frequency tracking and 38 hours of GPS battery.",
+    "category": "Fitness",
+    "price_cents": 19900,
+    "retailer": "COROS (via PlayBetter)",
+    "url": "https://www.playbetter.com/products/coros-pace-3-sport-gps-smartwatch",
+    "image": "https://www.playbetter.com/cdn/shop/files/Black-Nylon-1_700x700.jpg?v=1692807708",
+    "tags": ["myself", "friends", "anyone"],
+    "why": "Best value serious training watch, featherlight for long runs."
+  },
+  {
+    "title": "Garmin HRM-Pro Plus",
+    "descr": "Premium chest-strap heart rate monitor that captures running dynamics via ANT+ and Bluetooth.",
+    "category": "Fitness",
+    "price_cents": 12999,
+    "retailer": "Fleet Feet",
+    "url": "https://www.fleetfeet.com/products/hrm-pro-plus",
+    "image": "https://cdn.fleetfeet.com/productMini/products/HRMProPlus_HR_1002.png",
+    "tags": ["myself", "dad"],
+    "why": "The accuracy upgrade a training-data runner actually notices."
+  },
+  {
+    "title": "Garmin Index S2 Smart Scale",
+    "descr": "Wi-Fi smart scale that tracks weight, body fat, muscle, and water percent straight to Garmin Connect.",
+    "category": "Fitness",
+    "price_cents": 19999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Garmin-Wireless-Connectivity-Measure-010-02294-02/dp/B08KC5V33R",
+    "image": "https://m.media-amazon.com/images/I/61xW3cQ4nPL._AC_SL1500_.jpg",
+    "tags": ["myself", "dad", "wife"],
+    "why": "Closes the loop on training data by syncing body composition to the same ecosystem."
+  },
+  {
+    "title": "Oura Ring 4 (Silver)",
+    "descr": "Titanium smart ring that tracks sleep, recovery, heart rate, and readiness 24/7.",
+    "category": "Fitness",
+    "price_cents": 34900,
+    "retailer": "Oura",
+    "url": "https://ouraring.com/store/rings/oura-ring-4/silver",
+    "image": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/977008c2-4413-4f73-9579-90c2d5707e18.png",
+    "tags": ["myself", "wife", "anyone"],
+    "why": "Recovery and sleep insight in a ring you never have to think about wearing."
+  },
+  {
+    "title": "Theragun Mini 3rd Gen",
+    "descr": "Pocket-sized percussive massage gun with heated head and Bluetooth guided routines.",
+    "category": "Recovery",
+    "price_cents": 21999,
+    "retailer": "Therabody",
+    "url": "https://www.therabody.com/products/theragun-mini-gen-3-black",
+    "image": "https://www.therabody.com/cdn/shop/files/Mini-Gen-3-Black-PLP-Thumbnail-1.webp?v=1743189988",
+    "tags": ["myself", "dad", "wife", "anyone"],
+    "why": "Travel-friendly recovery tool that fits in a gym bag or carry-on."
+  },
+  {
+    "title": "Hyperice Normatec Go",
+    "descr": "Portable calf compression wrap delivering 7 levels of dynamic air massage for leg recovery.",
+    "category": "Recovery",
+    "price_cents": 37900,
+    "retailer": "Hyperice",
+    "url": "https://hyperice.com/products/normatec-go",
+    "image": "https://hyperice.com/cdn/shop/files/NormatecGo1.png?v=1781803627&width=2100",
+    "tags": ["myself", "dad"],
+    "why": "The novel recovery splurge: Normatec compression you can wear anywhere."
+  },
+  {
+    "title": "Hoka Clifton 10",
+    "descr": "Plush, lightweight everyday running shoe with a smooth MetaRocker and soft CMEVA midsole.",
+    "category": "Fitness",
+    "price_cents": 15500,
+    "retailer": "Hoka",
+    "url": "https://www.hoka.com/en/us/mens-everyday-running-gear/clifton-10/1162030.html",
+    "image": "https://www.hoka.com/dw/image/v2/BDHD_PRD/on/demandware.static/-/Sites-hoka-master-catalog/default/dw-clifton-10-mens.jpg",
+    "tags": ["myself", "dad", "anyone"],
+    "why": "The cushioned daily-trainer nearly every runner loves logging miles in."
+  },
+  {
+    "title": "On Cloudmonster 2",
+    "descr": "Maximalist CloudTec road shoe built for big cushioning and energetic return.",
+    "category": "Fitness",
+    "price_cents": 12500,
+    "retailer": "On",
+    "url": "https://www.on.com/en-us/products/cloudmonster-2-m-3me1012/mens/black-glacier-shoes-3ME10120777",
+    "image": "https://images.on.com/products/3ME10120777/mens/3ME10120777_1.png",
+    "tags": ["myself", "friends", "anyone"],
+    "why": "Fun, bouncy, head-turning shoe for easy days and errands alike."
+  },
+  {
+    "title": "Brooks Ghost 16",
+    "descr": "Neutral daily running shoe with nitrogen-infused DNA Loft v3 cushioning and a smooth ride.",
+    "category": "Fitness",
+    "price_cents": 14000,
+    "retailer": "Fleet Feet",
+    "url": "https://www.fleetfeet.com/products/mens-brooks-ghost-16",
+    "image": "https://cdn.fleetfeet.com/productMini/products/110418_438_L_Ghost_16.jpg",
+    "tags": ["dad", "friends", "anyone"],
+    "why": "The safe, universally comfortable trainer that fits almost anyone on your list."
+  },
+  {
+    "title": "Goodr OG Running Sunglasses",
+    "descr": "No-slip, no-bounce polarized running sunglasses with UV400 protection.",
+    "category": "Fitness",
+    "price_cents": 3000,
+    "retailer": "Fleet Feet",
+    "url": "https://www.fleetfeet.com/products/goodr-og-running-sunglasses",
+    "image": "https://cdn.fleetfeet.com/productMini/products/G00348-OG-BL1-GR_front.jpg",
+    "tags": ["myself", "friends", "coworker", "anyone"],
+    "why": "The $30 runner stocking-stuffer that stays put mile after mile."
+  },
+  {
+    "title": "Ciele GOCap",
+    "descr": "Lightweight, breathable five-panel running cap with a reflective, packable design.",
+    "category": "Fitness",
+    "price_cents": 4500,
+    "retailer": "Ciele Athletics",
+    "url": "https://cieleathletics.com/collections/gocap",
+    "image": "https://cieleathletics.com/cdn/shop/files/CIELE_GOCap_SC_Athletics_WhiteBar_01.jpg",
+    "tags": ["myself", "friends", "coworker", "anyone"],
+    "why": "The cult-favorite running hat that looks as good off the roads as on them."
+  },
+  {
+    "title": "Bombas Men's Run Ankle Sock 3-Pack",
+    "descr": "Lightweight moisture-wicking running socks with targeted cushioning and a blister tab.",
+    "category": "Fitness",
+    "price_cents": 5550,
+    "retailer": "Bombas",
+    "url": "https://bombas.com/products/mens-running-ankle-sock-3-pack",
+    "image": "https://bombas.com/cdn/shop/files/MRA3P-WHITE_1.jpg",
+    "tags": ["myself", "dad", "friends", "anyone"],
+    "why": "A giftable upgrade to the one running item everyone always needs more of."
+  },
+  {
+    "title": "lululemon Metal Vent Tech Short-Sleeve Shirt 2.0",
+    "descr": "Seamless, sweat-wicking technical tee with four-way stretch and anti-stink fabric.",
+    "category": "Apparel",
+    "price_cents": 7800,
+    "retailer": "lululemon",
+    "url": "https://shop.lululemon.com/p/metal-vent-tech-short-sleeve-two/n4tqwpwadx",
+    "image": "https://images.lululemon.com/is/image/lululemon/LM3FB6S_047506_1",
+    "tags": ["myself", "dad", "friends", "anyone"],
+    "why": "The go-to lululemon run tee that doubles as an everyday shirt."
+  },
+  {
+    "title": "lululemon Pace Breaker Linerless Short 7\"",
+    "descr": "Lightweight, quick-drying running short with a sweat-wicking, four-way-stretch build.",
+    "category": "Apparel",
+    "price_cents": 6800,
+    "retailer": "lululemon",
+    "url": "https://shop.lululemon.com/p/men-shorts/Pace-Breaker-Short-Linerless-7-Update/_/prod11400112",
+    "image": "https://images.lululemon.com/is/image/lululemon/LM7ARUS_0001_1",
+    "tags": ["myself", "friends", "anyone"],
+    "why": "The short a lululemon-loving runner will reach for all summer."
+  },
+  {
+    "title": "lululemon ABC Classic-Fit 5 Pocket Pant 32\" (Warpstreme)",
+    "descr": "Wrinkle-resistant, stretchy five-pocket pant that moves like athletic wear but looks dressed.",
+    "category": "Apparel",
+    "price_cents": 13800,
+    "retailer": "lululemon",
+    "url": "https://shop.lululemon.com/p/men-pants/ABC-Pant-Classic-32/_/prod9000003",
+    "image": "https://images.lululemon.com/is/image/lululemon/LM5AI5S_0001_1",
+    "tags": ["myself", "dad", "anyone"],
+    "why": "The do-everything pant a lululemon fan will wear nonstop."
+  },
+  {
+    "title": "vineyard vines Shep Shirt Quarter-Zip Pullover",
+    "descr": "Soft cotton-blend quarter-zip pullover, the preppy classic in the brand's signature look.",
+    "category": "Apparel",
+    "price_cents": 12800,
+    "retailer": "vineyard vines (via Nordstrom)",
+    "url": "https://www.nordstrom.com/s/vineyard-vines-shep-shirt-quarter-zip-pullover/8488913",
+    "image": "https://n.nordstrommedia.com/it/492450bc-a0e9-4873-b603-36812d92ff9e.jpeg",
+    "tags": ["dad", "myself", "friends", "anyone"],
+    "why": "The quintessential vineyard vines layer for the premium-casual wardrobe."
+  },
+  {
+    "title": "vineyard vines Performance Club Quarter-Zip Pullover",
+    "descr": "Lightweight, layerable quarter-zip with four-way stretch, UPF sun protection, and moisture-wicking fabric.",
+    "category": "Apparel",
+    "price_cents": 14800,
+    "retailer": "vineyard vines (via Nordstrom)",
+    "url": "https://www.nordstrom.com/s/vineyard-vines-performance-club-quarter-zip-pullover/8478189",
+    "image": "https://n.nordstrommedia.com/it/588d9343-96aa-4530-838b-d8729af555ea.jpeg",
+    "tags": ["dad", "myself", "anyone"],
+    "why": "Bridges vineyard vines style with performance fabric for the active dresser."
+  },
+  {
+    "title": "Stanley Quencher H2.0 FlowState Tumbler 40oz",
+    "descr": "Insulated 40oz stainless tumbler with handle and straw that keeps drinks cold for hours.",
+    "category": "Fitness",
+    "price_cents": 4500,
+    "retailer": "Stanley",
+    "url": "https://www.stanley1913.com/products/adventure-quencher-travel-tumbler-40-oz",
+    "image": "https://www.stanley1913.com/cdn/shop/files/B2B_Web_PNG-TheQuencherH2.OFlowStateTumbler40OZ-Black2.0-Front.png?v=1770327737",
+    "tags": ["wife", "friends", "coworker", "anyone"],
+    "why": "The broadly giftable hydration staple that lands with nearly anyone."
+  }
+]

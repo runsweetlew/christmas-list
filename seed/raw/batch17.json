@@ -1,0 +1,222 @@
+[
+  {
+    "title": "PRGR Black Pocket Launch Monitor (HS-130A)",
+    "descr": "Pocket-size K-band radar that reads club speed, ball speed, smash factor and carry distance with no app or subscription.",
+    "category": "Golf",
+    "price_cents": 19999,
+    "retailer": "Top Shelf Golf",
+    "url": "https://topshelfgolf.com/products/prgr-black-pocket-golf-launch-monitor",
+    "image": "https://cdn.shopify.com/s/files/1/0041/6386/2626/files/PRGR-Black-Pocket-Golf-Launch-Monitor-2021.jpg?v=1722021953",
+    "tags": ["dad", "myself"],
+    "why": "Serious practice feedback for the range or backyard without a monthly fee."
+  },
+  {
+    "title": "Bushnell Tour V6 Laser Rangefinder",
+    "descr": "Compact tournament-legal laser rangefinder with fast, sharp pin acquisition out to 1,300 yards.",
+    "category": "Golf",
+    "price_cents": 29999,
+    "retailer": "Dick's Sporting Goods",
+    "url": "https://www.dickssportinggoods.com/p/bushnell-tour-v6-laser-rangefinder-23busutrv6lsrrngfrng/23busutrv6lsrrngfrng",
+    "image": "https://dks.scene7.com/is/image/GolfGalaxy/23busutrv6lsrrngfrng_is",
+    "tags": ["dad"],
+    "why": "A trusted on-course staple that shaves strokes for any weekend golfer."
+  },
+  {
+    "title": "Callaway 2025 Fairway 14 Stand Bag",
+    "descr": "Lightweight 6 lb carry bag with a full 14-way divider top and ten pockets.",
+    "category": "Golf",
+    "price_cents": 29999,
+    "retailer": "Golf Galaxy",
+    "url": "https://www.golfgalaxy.com/p/callaway-2025-fairway-14-stand-bag-25cwym2025frwy14sbag/25cwym2025frwy14sbag",
+    "image": "https://dks.scene7.com/is/image/GolfGalaxy/25cwym2025frwy14sbag_is",
+    "tags": ["dad"],
+    "why": "An easy-to-carry upgrade that keeps every club organized and protected."
+  },
+  {
+    "title": "Callaway 2025 Supersoft Golf Balls (Dozen)",
+    "descr": "Low-compression dozen tuned for soft feel and extra distance for moderate swing speeds.",
+    "category": "Golf",
+    "price_cents": 2699,
+    "retailer": "Golf Galaxy",
+    "url": "https://www.golfgalaxy.com/p/callaway-2023-supersoft-golf-balls-22cwyu2023sprsftwgbl/22cwyu2023sprsftwgbl",
+    "image": "https://dks.scene7.com/is/image/GolfGalaxy/22cwyu2023sprsftwgbl_is",
+    "tags": ["dad", "anyone"],
+    "why": "A reliable, forgiving ball that makes a perfect stocking stuffer for a golfer."
+  },
+  {
+    "title": "Solo Stove Bonfire 2.0 Fire Pit & Stand Bundle",
+    "descr": "Smokeless 19.5-inch stainless steel backyard fire pit with its included stand.",
+    "category": "Outdoors",
+    "price_cents": 26999,
+    "retailer": "Solo Stove",
+    "url": "https://www.solostove.com/us/en-us/p/bonfire-plus-stand?sku=SSBON-SD-2.0",
+    "image": "https://www.solostove.com/cdn/shop/files/Bonfire2.0_Stand_Hero.jpg",
+    "tags": ["dad", "anyone"],
+    "why": "Nearly smokeless backyard fires that pull the whole family outside."
+  },
+  {
+    "title": "GCI Outdoor Freestyle Rocker Camp Chair",
+    "descr": "Folding spring-action rocking chair that rocks smoothly on any surface, grass or patio.",
+    "category": "Outdoors",
+    "price_cents": 8000,
+    "retailer": "GCI Outdoor",
+    "url": "https://gcioutdoor.com/products/freestyle-rocker-rocking-chair",
+    "image": "https://gcioutdoor.com/cdn/shop/files/37010-front-right.webp?v=1768598034&width=1500",
+    "tags": ["dad", "anyone"],
+    "why": "A genuinely comfortable rocker for the campfire, deck, or ballgame."
+  },
+  {
+    "title": "Weber iGrill 2 Bluetooth Thermometer",
+    "descr": "Four-probe Bluetooth meat thermometer that sends temperature alerts to your phone.",
+    "category": "Outdoors",
+    "price_cents": 10999,
+    "retailer": "Weber",
+    "url": "https://weber.com/US/en/accessories/cooking/igrill-and-thermometers/pimid_623.html",
+    "image": "https://assets.weber.com/image/upload/w_1200/weber-com/en_US/accessories/connected-tech-and-thermometers/7221-7203_iGrill2.jpg",
+    "tags": ["dad"],
+    "why": "Takes the guesswork out of grilling so dinner lands perfectly cooked."
+  },
+  {
+    "title": "YETI Rambler 20 oz Tumbler with MagSlider Lid",
+    "descr": "Double-wall vacuum-insulated stainless tumbler that keeps coffee hot and drinks cold for hours.",
+    "category": "Outdoors",
+    "price_cents": 4000,
+    "retailer": "YETI",
+    "url": "https://www.yeti.com/drinkware/tumblers/rambler-20oz.html",
+    "image": "https://yeti-web.imgix.net/5f6f6f6e5d5d5d5d/original/Rambler-20oz-Tumbler.png",
+    "tags": ["dad", "anyone", "myself"],
+    "why": "The everyday insulated cup that does garage, truck, and porch duty."
+  },
+  {
+    "title": "Chemical Guys Best Detailing Bucket Kit",
+    "descr": "Detailing bucket with Dirt Trap screen, premium wash mitt, and Citrus Wash & Gloss soap.",
+    "category": "Auto",
+    "price_cents": 4999,
+    "retailer": "Chemical Guys",
+    "url": "https://www.chemicalguys.com/products/best-detailing-bucket-kit",
+    "image": "https://www.chemicalguys.com/cdn/shop/files/HOL133.jpg?crop=center&height=800&v=1762198279&width=800",
+    "tags": ["dad", "anyone"],
+    "why": "Everything needed for a proper swirl-free hand wash in one grab-and-go kit."
+  },
+  {
+    "title": "Adam's Polishes Arsenal Kit",
+    "descr": "Eleven-piece car care arsenal with foam gun, wash mitt, clay bar, wax, and detailers.",
+    "category": "Auto",
+    "price_cents": 12999,
+    "retailer": "Adam's Polishes",
+    "url": "https://adamspolishes.com/products/adams-arsenal-kit",
+    "image": "https://adamspolishes.com/cdn/shop/files/adams_polishes_arsenal_kit_updated_spray_wax_rpoduct_photo.jpg?v=1696547539&width=1200",
+    "tags": ["dad", "myself"],
+    "why": "A complete detailing starter set for the dad who loves a clean car."
+  },
+  {
+    "title": "Chemical Guys TORQX Random Orbital Polisher Kit",
+    "descr": "700W dual-action polisher kit with pads, compound, and polish for safe paint correction.",
+    "category": "Auto",
+    "price_cents": 21499,
+    "retailer": "Chemical Guys",
+    "url": "https://www.chemicalguys.com/products/torqx-random-orbital-polisher-kit",
+    "image": "https://www.chemicalguys.com/cdn/shop/files/BUF503X.jpg?crop=center&height=800&v=1785801329&width=800",
+    "tags": ["dad", "myself"],
+    "why": "Brings back showroom gloss and removes swirls without burning paint."
+  },
+  {
+    "title": "Rain-X Cerami-X Ceramic Exterior Detailer (22 oz)",
+    "descr": "Spray-on ceramic detailer that adds hydrophobic shine and protection between washes.",
+    "category": "Auto",
+    "price_cents": 1499,
+    "retailer": "Ace Hardware",
+    "url": "https://www.acehardware.com/departments/automotive-rv-and-marine/car-cleaning-supplies/automobile-waxes-and-polishes/8068677",
+    "image": "https://cdn.acehardware.com/dam/image/8068677_1.jpg",
+    "tags": ["dad", "anyone"],
+    "why": "An easy, cheap way to keep a car glossy and beading all winter."
+  },
+  {
+    "title": "The Wager by David Grann (Hardcover)",
+    "descr": "David Grann's gripping narrative nonfiction account of an 18th-century shipwreck, mutiny, and murder.",
+    "category": "Books",
+    "price_cents": 3250,
+    "retailer": "Barnes & Noble",
+    "url": "https://www.barnesandnoble.com/w/the-wager-david-grann/1142162191?ean=9780385534260",
+    "image": "https://prodimage.images-bn.com/pimages/9780385534260_p0_v2_s1200x630.jpg",
+    "tags": ["dad"],
+    "why": "A page-turning true survival saga that reads like an adventure novel."
+  },
+  {
+    "title": "The Demon of Unrest by Erik Larson (Hardcover)",
+    "descr": "Erik Larson's narrative history of the five months between Lincoln's election and the first shots at Fort Sumter.",
+    "category": "Books",
+    "price_cents": 3500,
+    "retailer": "Penguin Random House",
+    "url": "https://www.penguinrandomhouse.com/books/225407/the-demon-of-unrest-by-erik-larson/",
+    "image": "https://images2.penguinrandomhouse.com/cover/9780385348768",
+    "tags": ["dad"],
+    "why": "Masterful Civil War storytelling from the author of The Devil in the White City."
+  },
+  {
+    "title": "National Geographic Atlas of the World, 11th Edition",
+    "descr": "Oversized reference atlas with authoritative physical, political, and thematic maps of the world.",
+    "category": "Books",
+    "price_cents": 22500,
+    "retailer": "Barnes & Noble",
+    "url": "https://www.barnesandnoble.com/w/national-geographic-atlas-of-the-world-11th-edition-national-geographic/1129999262",
+    "image": "https://prodimage.images-bn.com/pimages/9781426220586_p0_v1_s1200x630.jpg",
+    "tags": ["dad"],
+    "why": "A coffee-table heirloom for a dad who loves maps, history, and geography."
+  },
+  {
+    "title": "Leatherman Wave Plus Multi-Tool",
+    "descr": "18-tool stainless multi-tool with full-size pliers, replaceable wire cutters, and a 25-year warranty.",
+    "category": "Tech",
+    "price_cents": 12995,
+    "retailer": "Leatherman",
+    "url": "https://www.leatherman.com/products/wave",
+    "image": "https://www.leatherman.com/cdn/shop/files/wave_20260402201902_5dib.jpg?v=1777562829&width=1500",
+    "tags": ["dad", "anyone", "myself"],
+    "why": "The do-everything pocket tool that lives in a glovebox or workbench for decades."
+  },
+  {
+    "title": "Carhartt Waterproof Insulated Glove (A511)",
+    "descr": "Insulated waterproof work gloves with digital-grip palm, FastDry lining, and fleece cuff.",
+    "category": "Apparel",
+    "price_cents": 3499,
+    "retailer": "Carhartt",
+    "url": "https://www.carhartt.com/product/800202/waterproof-insulated-glove",
+    "image": "https://cd26-static.carhartt.com/is/image/Carhartt/GL0511_BLK?wid=1200",
+    "tags": ["dad", "anyone"],
+    "why": "Warm, dry hands for snow blowing, firewood, and freezing-morning chores."
+  },
+  {
+    "title": "Carhartt Washed Duck Sherpa-Lined Vest",
+    "descr": "Rugged washed-duck canvas vest with warm sherpa lining for layering in the cold.",
+    "category": "Apparel",
+    "price_cents": 8999,
+    "retailer": "Carhartt",
+    "url": "https://www.carhartt.com/product/104394/washed-duck-rugged-vest",
+    "image": "https://cd26-static.carhartt.com/is/image/Carhartt/104394_BRN?wid=1200",
+    "tags": ["dad"],
+    "why": "A classic workwear vest that is equal parts warm, tough, and timeless."
+  },
+  {
+    "title": "Carhartt A18 Knit Cuffed Beanie",
+    "descr": "Iconic 100% acrylic rib-knit watch cap with a fold-up cuff and Carhartt patch.",
+    "category": "Apparel",
+    "price_cents": 1999,
+    "retailer": "Carhartt",
+    "url": "https://www.carhartt.com/product/A18/iconic-a18-watch-cap-beanie",
+    "image": "https://cd26-static.carhartt.com/is/image/Carhartt/A18_BLK?wid=1200",
+    "tags": ["dad", "anyone", "myself"],
+    "why": "The go-to cold-weather beanie that goes with everything."
+  },
+  {
+    "title": "Darn Tough Hiker Micro Crew Midweight Socks (3-Pack)",
+    "descr": "Three pairs of merino-wool cushioned hiking socks with a lifetime guarantee, made in Vermont.",
+    "category": "Apparel",
+    "price_cents": 7800,
+    "retailer": "Darn Tough",
+    "url": "https://darntough.com/products/mens-hiker-micro-crew-3-pack",
+    "image": "https://darntough.com/cdn/shop/products/hikerpack.png?v=1762198667",
+    "tags": ["dad", "anyone", "myself"],
+    "why": "Warm merino socks so durable they are guaranteed for life."
+  }
+]

@@ -1,0 +1,178 @@
+[
+  {
+    "title": "KONG Extreme Dog Toy (Large)",
+    "descr": "The toughest version of the classic KONG, a treat-stuffable black rubber chew built for the most determined power chewers.",
+    "category": "Toys",
+    "price_cents": 1496,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/KONG-41940-Extreme-Large/dp/B0002AR0II",
+    "image": "https://m.media-amazon.com/images/I/51Pr6k6QKPL._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "Nearly indestructible and endlessly stuffable, the gold standard for heavy chewers."
+  },
+  {
+    "title": "Outward Hound Nina Ottosson Dog Tornado Puzzle",
+    "descr": "A spinning three-layer treat puzzle with 12 hidden compartments that rewards dogs for sniffing and problem-solving.",
+    "category": "Enrichment",
+    "price_cents": 1547,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Outward-Hound-Ottosson-Tornado-Puzzle/dp/B07239T47Y",
+    "image": "https://m.media-amazon.com/images/I/71qMYWAqPvL._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "Burns mental energy and curbs boredom better than another squeaky toy."
+  },
+  {
+    "title": "Ruffwear Front Range Dog Harness",
+    "descr": "A padded, reflective everyday harness with dual leash clips and an ID pocket, built for walks, training, and adventures.",
+    "category": "Outdoor",
+    "price_cents": 4995,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Ruffwear-Front-Range-Harness/dp/B0HNDDXSQ4",
+    "image": "https://m.media-amazon.com/images/I/81tHqvDlUyL._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "The go-to no-pull harness that is comfortable enough to wear all day."
+  },
+  {
+    "title": "Furbo 360 Dog Camera",
+    "descr": "A rotating Wi-Fi pet camera with treat tossing, two-way audio, barking alerts, and night vision, with no required subscription.",
+    "category": "Tech",
+    "price_cents": 19999,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Furbo-Camera-with-360%C2%B0-View/dp/B09GDQZLD1",
+    "image": "https://m.media-amazon.com/images/I/616wRFOTA5L._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "Check in and fling a treat to your dog from anywhere, a novel hero gift."
+  },
+  {
+    "title": "Big Barker 7-Inch Orthopedic Dog Bed (Large)",
+    "descr": "A therapeutic-grade 7-inch memory foam bed, vet-recommended for joint and arthritis support with a washable cover, made in the USA.",
+    "category": "Comfort",
+    "price_cents": 24995,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Big-Barker-Pillow-Top-Orthopedic/dp/B0786NSZHZ",
+    "image": "https://m.media-amazon.com/images/I/81CCJbYFECL._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "A genuinely orthopedic bed that holds its shape for years, great for big or aging dogs."
+  },
+  {
+    "title": "Benebone Wishbone Dog Chew Toy (Large)",
+    "descr": "A real-flavor nylon chew with a wishbone shape engineered so dogs can grip and gnaw it from any angle.",
+    "category": "Toys",
+    "price_cents": 1943,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Benebone-Wishbone-Durable-Aggressive-Chewers/dp/B014JY9E9U",
+    "image": "https://m.media-amazon.com/images/I/81i6lR5gshL._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "Long-lasting, made in the USA, and shaped for how dogs actually chew."
+  },
+  {
+    "title": "West Paw Zogoflex Toppl Treat Toy (Large)",
+    "descr": "A tip-and-wobble treat-dispensing toy made from tough, recyclable Zogoflex that is lickable, freezable, and dishwasher safe.",
+    "category": "Enrichment",
+    "price_cents": 2195,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/WEST-PAW-Toppl-Tough-Large/dp/B00N54E9MI",
+    "image": "https://m.media-amazon.com/images/I/71u8rMvErhL._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "Freeze it with peanut butter for a slow, satisfying enrichment session."
+  },
+  {
+    "title": "Chuckit! Ultra Ball (Medium, 2-Pack)",
+    "descr": "High-bounce, buoyant natural rubber fetch balls that float and are compatible with Chuckit launchers for slobber-free throws.",
+    "category": "Outdoor",
+    "price_cents": 799,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/ChuckIt-Ultra-Ball-Medium-Inch/dp/B000F4AVPA",
+    "image": "https://m.media-amazon.com/images/I/91umkHfYwKL._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "The fetch ball that bounces higher, floats, and outlasts a tennis ball."
+  },
+  {
+    "title": "Goughnuts MAXX Ring Dog Chew (Large)",
+    "descr": "A heavy-duty natural rubber ring with a red safety-core indicator, built in the USA for the most destructive large chewers.",
+    "category": "Toys",
+    "price_cents": 3768,
+    "retailer": "Goughnuts",
+    "url": "https://www.goughnuts.com/shop/large-rings",
+    "image": "https://images.squarespace-cdn.com/content/v1/5d03e728c74f0b0001136879/1719140595299-5D21DDMV2S8V2NNXNSWS/Goughnuts_rings_2000px_6.25.jpg",
+    "tags": ["dogs"],
+    "why": "A built-in red warning layer tells you when to retire it, a safer super-chew."
+  },
+  {
+    "title": "Ruffwear Grip Trex Dog Boots (Set of 4)",
+    "descr": "All-terrain dog booties with Vibram rubber soles and breathable mesh that protect paws on hot pavement, snow, and rocky trails.",
+    "category": "Outdoor",
+    "price_cents": 7995,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/RUFFWEAR-Outdoor-Rubber-Hiking-Running/dp/B012V5JTL2",
+    "image": "https://m.media-amazon.com/images/I/81SHPwzui6L._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "Real traction and paw protection for winter walks and summer hikes."
+  },
+  {
+    "title": "PetSafe Ricochet Electronic Dog Toy",
+    "descr": "A pair of battery-operated squeak toys that pass the sound back and forth, keeping dogs chasing a moving squeak on their own.",
+    "category": "Enrichment",
+    "price_cents": 4995,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/PetSafe-Ricochet-Electronic-Interactive-Sound/dp/B07H5XRYG6",
+    "image": "https://m.media-amazon.com/images/I/811lr7fpBPL._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "A clever self-play toy that keeps a bored dog busy without you throwing anything."
+  },
+  {
+    "title": "Snuggle Puppy Heartbeat Comfort Toy",
+    "descr": "A plush companion with a real-feel heartbeat pulse and warming pack that calms anxiety, crate training, and first nights.",
+    "category": "Comfort",
+    "price_cents": 3995,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Snuggle-Original-Heartbeat-Real-Feel-Training/dp/B000C9YHFS",
+    "image": "https://m.media-amazon.com/images/I/71yBxW6Ph7L._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "The vet-loved cure for puppy whining and separation anxiety."
+  },
+  {
+    "title": "LickiMat Classic Buddy Slow Feeder Mat",
+    "descr": "A textured licking mat you spread with peanut butter, yogurt, or wet food to slow eating and soothe anxious dogs.",
+    "category": "Enrichment",
+    "price_cents": 1299,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Lickimat-Classic-Boredom-Anxiety-Alternative/dp/B08GQCRG4P",
+    "image": "https://m.media-amazon.com/images/I/71pepYEfCmL._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "A cheap, calming way to stretch treats into ten minutes of focused licking."
+  },
+  {
+    "title": "Kurgo Loft Reversible Dog Jacket",
+    "descr": "A water-resistant, reversible quilted winter coat with reflective trim and a zipper opening for harness access.",
+    "category": "Comfort",
+    "price_cents": 4800,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Kurgo-Reversible-Resistant-Reflective-Lightweight/dp/B082LJ3DQB",
+    "image": "https://m.media-amazon.com/images/I/81HHNLgifbL._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "Keeps short-coated dogs warm and visible on cold, dark winter walks."
+  },
+  {
+    "title": "Planet Dog Orbee-Tuff Holiday Snowball Treat Toy",
+    "descr": "A durable, bouncy snowball-shaped chew and fetch toy that dispenses treats and floats, perfect for a holiday stocking.",
+    "category": "Holiday",
+    "price_cents": 1600,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Planet-Dog-Orbee-Tuff-Holiday-Dispensing/dp/B07GFPCJKB",
+    "image": "https://m.media-amazon.com/images/I/61Zo9s3cqUL._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "A festive, treat-stuffable chew that actually survives holiday play."
+  },
+  {
+    "title": "Wobble Wag Giggle Ball",
+    "descr": "An interactive ball that makes fun giggle sounds as it rolls, with grab tabs that encourage chasing and self-play.",
+    "category": "Toys",
+    "price_cents": 1499,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Allstar-Innovations-Wobble-Giggle-Ball/dp/B00PQ5UH0C",
+    "image": "https://m.media-amazon.com/images/I/71SS14VrgnL._AC_SL1500_.jpg",
+    "tags": ["dogs"],
+    "why": "The giggling noise hooks dogs instantly for independent play."
+  }
+]

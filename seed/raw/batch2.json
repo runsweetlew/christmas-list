@@ -1,0 +1,222 @@
+[
+  {
+    "title": "Barefoot Dreams CozyChic Lite Ribbed Robe",
+    "descr": "The buttery-soft knit robe that made every best-of list, so she basically lives in it all winter.",
+    "category": "Cozy",
+    "price_cents": 12800,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Barefoot-Dreams-CozyChic-Lite-Ribbed/dp/B0CGH7JFY4",
+    "image": "",
+    "tags": ["mom", "wife", "anyone"],
+    "why": "The safest can't-miss cozy gift for a mom or wife who loves to lounge."
+  },
+  {
+    "title": "UGG Ana Knit Throw Blanket (50\" x 70\")",
+    "descr": "An oversized, velvety-soft reversible knit throw that turns any couch into the best seat in the house.",
+    "category": "Cozy",
+    "price_cents": 7800,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/UGG-Ana-Throw-Size-Navy/dp/B07KYC7828",
+    "image": "",
+    "tags": ["mom", "wife", "anyone", "friends"],
+    "why": "A universally loved cozy gift for anyone who runs cold on the sofa."
+  },
+  {
+    "title": "NEST New York Holiday Classic Scented Candle (8.1 oz)",
+    "descr": "The iconic Holiday scent, pomegranate, mandarin and clove, that makes a whole house smell like Christmas.",
+    "category": "Cozy",
+    "price_cents": 4400,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/NEST-Fragrances-Classic-Candle-NEST01HL/dp/B0043R48Z4",
+    "image": "",
+    "tags": ["mom", "wife", "anyone", "coworker"],
+    "why": "A tasteful, giftable candle that reads instantly as the holidays."
+  },
+  {
+    "title": "Diptyque Baies Scented Candle (190g)",
+    "descr": "The cult French candle, blackcurrant and Bulgarian rose, that is pure quiet luxury on a shelf.",
+    "category": "Cozy",
+    "price_cents": 9800,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Diptyque-Limited-Graphic-Collection-Candle/dp/B094LHLB1R",
+    "image": "",
+    "tags": ["wife", "mom", "friends"],
+    "why": "A splurge candle for someone with refined taste who would never buy it herself."
+  },
+  {
+    "title": "Voluspa Macaron Candle Set",
+    "descr": "Petite jewel-toned coconut-wax candles that look like a dessert tray and smell even better.",
+    "category": "Cozy",
+    "price_cents": 2500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Voluspa-Roses-Candle-Set/dp/B07JBL9SNQ",
+    "image": "",
+    "tags": ["friends", "coworker", "anyone"],
+    "why": "A charming, affordable candle gift that works for almost anyone on the list."
+  },
+  {
+    "title": "Parachute Classic Turkish Cotton Robe",
+    "descr": "A plush, long-staple Turkish cotton spa robe with a shawl collar that feels like a hotel every morning.",
+    "category": "Cozy",
+    "price_cents": 10900,
+    "retailer": "Parachute",
+    "url": "https://parachutehome.com/products/classic-bathrobe",
+    "image": "",
+    "tags": ["wife", "mom", "anyone"],
+    "why": "An elevated robe upgrade for someone who appreciates hotel-grade comfort."
+  },
+  {
+    "title": "Cozy Earth Bamboo Pajama Set",
+    "descr": "Temperature-regulating viscose-from-bamboo pajamas so soft they turned up on Oprah's Favorite Things.",
+    "category": "Cozy",
+    "price_cents": 13100,
+    "retailer": "Cozy Earth",
+    "url": "https://www.amazon.com/Cozy-Earth-Stretch-Knit-Bamboo-Pajama/dp/B084RDM8NL",
+    "image": "",
+    "tags": ["wife", "mom"],
+    "why": "A luxurious upgrade for a wife or mom who sleeps hot and loves good PJs."
+  },
+  {
+    "title": "Bombas Women's Gripper Slipper Socks",
+    "descr": "Thick, cushioned, no-slip slipper socks with a brushed warm lining for padding around the house.",
+    "category": "Cozy",
+    "price_cents": 2900,
+    "retailer": "Bombas",
+    "url": "https://www.amazon.com/Womens-Gripper-Slippers-by-Bombas/dp/B0GNJ9G9FS",
+    "image": "",
+    "tags": ["mom", "coworker", "friends", "anyone"],
+    "why": "A cozy little stocking-stuffer that genuinely gets worn every day."
+  },
+  {
+    "title": "Gravity Weighted Blanket (15 lb)",
+    "descr": "The original premium weighted blanket with glass beads and a soft duvet cover for calmer, deeper sleep.",
+    "category": "Self-care",
+    "price_cents": 18900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Gravity-Weighted-Blankets-Duvet-Cover-Cotton-Blanket/dp/B08CS1TMMH",
+    "image": "",
+    "tags": ["mom", "wife", "anyone"],
+    "why": "A thoughtful self-care gift for anyone who is stressed or a restless sleeper."
+  },
+  {
+    "title": "Slip Pure Silk Queen Pillowcase (22 Momme Mulberry Silk)",
+    "descr": "A 100% mulberry silk pillowcase that is gentler on hair and skin, the easiest everyday luxury upgrade.",
+    "category": "Self-care",
+    "price_cents": 8900,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/slip-Slip-Silk-Pillowcase-Silver/dp/B078P5F988",
+    "image": "",
+    "tags": ["wife", "mom", "friends"],
+    "why": "A beauty-sleep upgrade for anyone who cares about hair and skin."
+  },
+  {
+    "title": "OSEA Undaria Algae Body Oil (5 oz)",
+    "descr": "An Allure-winning seaweed body oil that firms and leaves a lightweight, non-greasy full-body glow.",
+    "category": "Spa",
+    "price_cents": 6000,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/OSEA-Undaria-Algae-Body-Oil/dp/B004L17FKC",
+    "image": "https://osea.imgix.net/files/OSEA_UndariaAlgaeBodyOil_UAO-295-DTC-1_badgeless.jpg?v=1758087570&auto=format,compress&w=720",
+    "tags": ["wife", "mom", "myself", "friends"],
+    "why": "A clean-beauty spa gift for the self-care lover who wants that lit-from-within glow."
+  },
+  {
+    "title": "Laura Mercier Ambre Vanille Souffle Body Creme (12 oz)",
+    "descr": "A rich, serum-infused shea-and-squalane body souffle wrapped in warm amber and vanilla.",
+    "category": "Spa",
+    "price_cents": 7500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Laura-Mercier-Ambre-Vanille-Souffle/dp/B00BCIA9NW",
+    "image": "https://www.lauramercier.com/cdn/shop/products/LM_SP23_BB_Silo_SouffleHandCreme_AmbreVanille_3000x3000_R300.png?v=1762198027",
+    "tags": ["mom", "wife", "anyone"],
+    "why": "A decadent, great-smelling body cream that feels like a treat to receive."
+  },
+  {
+    "title": "RITUALS The Ritual of Sakura Gift Set (Medium)",
+    "descr": "A beautifully boxed cherry-blossom and rice-milk set of shower gel, scrub and body cream, ready to gift.",
+    "category": "Spa",
+    "price_cents": 4500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/RITUALS-Ritual-Sakura-Beauty-Gift/dp/B07WH29SFD",
+    "image": "",
+    "tags": ["mom", "wife", "coworker", "anyone"],
+    "why": "A pre-wrapped spa set that makes an easy, impressive gift for almost anyone."
+  },
+  {
+    "title": "Lollia Wish Shea Butter Handcreme (4 oz)",
+    "descr": "A gorgeously packaged hand cream in sugared vanilla, jasmine and sugarcane, pure small-luxury indulgence.",
+    "category": "Self-care",
+    "price_cents": 3000,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/LOLLIA-Cream-Women-Butter-Lotion/dp/B000Z65APY",
+    "image": "",
+    "tags": ["mom", "coworker", "friends", "anyone"],
+    "why": "A pretty, affordable pick-me-up that works as a gift or stocking stuffer."
+  },
+  {
+    "title": "Burt's Bees Tips and Toes Kit",
+    "descr": "A six-piece travel set of hand creams, cuticle cream, foot cream and lip balm in a ready-to-give box.",
+    "category": "Self-care",
+    "price_cents": 1500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Burts-Bees-Tips-Toes-Kit/dp/B00NQ2KGIU",
+    "image": "",
+    "tags": ["coworker", "friends", "anyone", "mom"],
+    "why": "A budget-friendly, always-welcome gift for coworkers, teachers or a gift exchange."
+  },
+  {
+    "title": "Kitsch Satin Heatless Curling Set",
+    "descr": "The TikTok-famous satin rod and scrunchies that give soft, damage-free curls while you sleep.",
+    "category": "Self-care",
+    "price_cents": 1800,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Kitsch-Satin-Heatless-Curling-Set/dp/B0CCSS6Z8Y",
+    "image": "",
+    "tags": ["friends", "wife", "myself", "anyone"],
+    "why": "A fun, novel little gift for anyone into easy, no-heat hair styling."
+  },
+  {
+    "title": "Kendra Scott Mini Elisa Pendant Necklace",
+    "descr": "A dainty 14k gold-plated stone pendant on a slim chain that layers with everything and suits every outfit.",
+    "category": "Jewelry",
+    "price_cents": 5500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/Kendra-Scott-Starstruck-Pendant-Necklace/dp/B00O7FNWGS",
+    "image": "",
+    "tags": ["wife", "mom", "friends", "anyone"],
+    "why": "A tasteful, giftable piece of jewelry that is safe for nearly any woman on the list."
+  },
+  {
+    "title": "BaubleBar Gold Bubble Initial Necklace",
+    "descr": "A playful 3D gold-plated initial pendant that makes an easy, personal gift for her letter.",
+    "category": "Jewelry",
+    "price_cents": 4800,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/dp/B0HPN726ZZ",
+    "image": "",
+    "tags": ["wife", "friends", "mom"],
+    "why": "A personalized-feeling jewelry gift without needing a custom order."
+  },
+  {
+    "title": "PANDORA Moments Heart Clasp Snake Chain Bracelet (Sterling Silver)",
+    "descr": "The classic sterling-silver charm bracelet, a gift she can keep adding to for years to come.",
+    "category": "Jewelry",
+    "price_cents": 7500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/PANDORA-Jewelry-Moments-Sterling-Bracelet/dp/B00S18EKAE",
+    "image": "",
+    "tags": ["wife", "mom", "friends"],
+    "why": "A keepsake jewelry gift that becomes a tradition of adding charms."
+  },
+  {
+    "title": "Stanley Quencher H2.0 FlowState Tumbler (40 oz)",
+    "descr": "The viral insulated 40 oz tumbler with handle and straw that keeps drinks icy all day long.",
+    "category": "Self-care",
+    "price_cents": 4500,
+    "retailer": "Amazon",
+    "url": "https://www.amazon.com/STANLEY-Quencher-FlowState-Tumbler-Charcoal/dp/B0BD78MYPN",
+    "image": "",
+    "tags": ["wife", "mom", "coworker", "friends", "anyone"],
+    "why": "A broadly loved, safe gift for anyone trying to stay hydrated on the go."
+  }
+]
