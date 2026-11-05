@@ -17,33 +17,58 @@ async function verify(url) {
   } catch (e) { return false; } finally { clearTimeout(t); }
 }
 
-async function resolveImage(title) {
-  if (!title) return '';
+const BADPAGE = /(bing\.com|pinterest\.|facebook\.|instagram\.|lookaside|ebay\.|aliexpress\.|auction|dhgate\.|wish\.com)/i;
+// Only trust a Bing image's source page as the product link if it is a reputable
+// retailer or clearly a product page; otherwise the caller falls back to search.
+const GOODPAGE = /(amazon\.com|etsy\.com|target\.com|walmart\.com|bestbuy\.com|rei\.com|homedepot\.com|lowes\.com|wayfair\.com|nordstrom\.com|crateandbarrel\.com|williams-?sonoma\.com|chewy\.com|uncommongoods\.com|backcountry\.com|macys\.com|surlatable\.com|\/dp\/|\/gp\/product|\/ip\/|\/product\/|\/products\/|\/listing\/|\/p\/|\/pd\/)/i;
+
+function decodeEnt(s) { return String(s).replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/\\u0026/g, '&'); }
+
+// Returns an ordered list of {image, page} candidates from Bing image search,
+// each pair taken from the SAME search result so the photo and the product page
+// match. Uses the iusc "m" JSON blob (murl = image, purl = source page).
+function parseResults(html) {
+  const out = [];
+  for (const m of html.matchAll(/class="iusc"[^>]*\sm="([^"]+)"/g)) {
+    try {
+      const j = JSON.parse(decodeEnt(m[1]));
+      if (j && j.murl) out.push({ image: j.murl, page: j.purl || '' });
+    } catch (e) { /* ignore */ }
+  }
+  if (!out.length) { // fallback: image-only
+    for (const m of html.matchAll(/murl&quot;:&quot;(.*?)&quot;/g)) out.push({ image: decodeEnt(m[1]), page: '' });
+  }
+  return out;
+}
+
+async function resolveProduct(title) {
+  if (!title) return { image: '', page: '' };
   try {
     const r = await fetch('https://www.bing.com/images/search?q=' + encodeURIComponent(title) + '&form=HDRSC2&first=1',
       { headers: { 'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9' } });
-    if (!r.ok) return '';
-    const h = await r.text();
-    const urls = [...h.matchAll(/murl&quot;:&quot;(.*?)&quot;/g)].map((m) => m[1].replace(/\\u0026/g, '&'));
-    for (const u of urls.filter((x) => x && !BAD.test(x)).slice(0, 5)) {
-      if (await verify(u)) return u;
+    if (!r.ok) return { image: '', page: '' };
+    const cands = parseResults(await r.text()).filter((c) => c.image && !BAD.test(c.image)).slice(0, 6);
+    for (const c of cands) {
+      if (await verify(c.image)) {
+        const page = c.page && /^https?:\/\//i.test(c.page) && !BADPAGE.test(c.page) && GOODPAGE.test(c.page) ? c.page : '';
+        return { image: c.image, page };
+      }
     }
   } catch (e) { /* ignore */ }
-  return '';
+  return { image: '', page: '' };
 }
 
-// Resolve images for many titles with limited concurrency. Returns Map(title->url).
+async function resolveImage(title) { return (await resolveProduct(title)).image; }
+
+// Resolve many titles concurrently. Returns Map(title -> {image, page}).
 async function resolveMany(titles, conc = 6) {
   const out = new Map();
   let i = 0;
   async function worker() {
-    while (i < titles.length) {
-      const t = titles[i++];
-      out.set(t, await resolveImage(t));
-    }
+    while (i < titles.length) { const t = titles[i++]; out.set(t, await resolveProduct(t)); }
   }
   await Promise.all(Array.from({ length: Math.min(conc, titles.length) }, worker));
   return out;
 }
 
-module.exports = { resolveImage, resolveMany };
+module.exports = { resolveImage, resolveProduct, resolveMany };

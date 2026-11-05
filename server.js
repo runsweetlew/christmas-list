@@ -159,15 +159,17 @@ async function runGeneration(r, rounds, liked) {
   // dedup against what the recipient already has / within this batch
   const fresh = [];
   for (const it of all) { const k = it.title.toLowerCase(); if (seen.has(k)) continue; seen.add(k); fresh.push(it); }
-  // give the generated ideas real product photos too (best-effort, concurrent)
+  // give generated ideas a real photo AND a matching product link from the same
+  // search result, so the link and photo are consistent and accurate.
   let imgMap = new Map();
   try { imgMap = await resolveMany(fresh.map((f) => f.title), 6); } catch (e) { /* ignore */ }
   const insertTx = db.transaction(() => {
     for (const it of fresh) {
+      const rr = imgMap.get(it.title) || {};
       Q.insIdea.run({
         recipient_id: r.id, title: it.title, descr: it.descr, category: it.category,
-        est_price: it.est_price, retailer: it.retailer, search_url: it.search_url, product_url: '',
-        image: imgMap.get(it.title) || '', source: it.source || 'ai', why: it.why, created: ts, updated: ts
+        est_price: it.est_price, retailer: it.retailer, search_url: it.search_url, product_url: rr.page || '',
+        image: rr.image || '', source: it.source || 'ai', why: it.why, created: ts, updated: ts
       });
       added++;
     }
@@ -184,26 +186,44 @@ app.post('/api/recipients/:id/generate', async (req, res) => {
   res.json({ ...out, ideas: Q.ideasFor.all(r.id) });
 });
 
-// ---- refine: keep the top 25% by Elo, retire the rest, breed fresh ideas from the winners ----
+const countActive = (id) => Q.ideasFor.all(id).filter((i) => i.status === 'active').length;
+
+// Generate (in bounded batches) until the recipient has at least `target` active
+// ideas. `liked` keeps new ideas on-taste. Stops on no-progress or a guard cap.
+async function generateUpTo(recipientId, target, liked) {
+  let active = countActive(recipientId), added = 0, provider = 'none', lastError = null, guard = 0;
+  while (active < target && guard < 6) {
+    const rounds = Math.min(3, Math.max(1, Math.ceil((target - active) / 9)));
+    const out = await runGeneration(Q.recipient.get(recipientId), rounds, liked);
+    added += out.added; if (out.provider !== 'none') provider = out.provider; if (out.error) lastError = out.error;
+    const na = countActive(recipientId);
+    if (na <= active) break; // engine dry or rate-limited, stop rather than loop
+    active = na; guard++;
+  }
+  return { added, provider, error: added ? null : lastError, active };
+}
+
+// ---- refine: keep the top 50% by Elo, retire the bottom 50%, breed fresh ideas
+//      from the winners, and never leave fewer than 80 active ideas ----
 app.post('/api/recipients/:id/refine', async (req, res) => {
   const r = Q.recipient.get(num(req.params.id));
   if (!r) return res.status(404).json({ error: 'not found' });
   const active = Q.ideasFor.all(r.id).filter((i) => i.status === 'active'); // ordered by rating desc
   if (active.length < 4) return res.status(400).json({ error: 'not enough ideas to refine yet, battle a few first' });
-  const pct = Math.min(0.9, Math.max(0.1, Number(req.body && req.body.pct) || 0.25));
+  const pct = Math.min(0.9, Math.max(0.1, Number(req.body && req.body.pct) || 0.5));
   const keepN = Math.max(5, Math.ceil(active.length * pct));
   const keep = active.slice(0, keepN);
   const retire = active.slice(keepN);
   const ts = nowIso();
   db.transaction(() => { for (const it of retire) Q.setStatus.run({ id: it.id, status: 'hidden', updated: ts }); })();
-  // Pass the winners as a positive lean for THIS generation only. We intentionally
-  // do NOT write them into the persisted profile feedback, so they never override
-  // the shopper's explicit steering on later runs.
+  // Pass the winners as a positive lean for THIS generation only (not persisted,
+  // so it never overrides the shopper's explicit steering later).
   const liked = keep.map((i) => i.title + (i.category ? ' (' + i.category + ')' : ''));
-  const fresh = Q.recipient.get(r.id);
-  const rounds = num(req.body && req.body.rounds, 3);
-  const out = await runGeneration(fresh, rounds, liked);
-  res.json({ kept: keep.length, retired: retire.length, ...out, recipient: recipientPayload(fresh), ideas: Q.ideasFor.all(r.id) });
+  // replace the retired half, floored at 80 and capped so it stays reasonably fast
+  const target = Math.max(80, Math.min(active.length, keepN + 40));
+  const out = await generateUpTo(r.id, target, liked);
+  res.json({ kept: keep.length, retired: retire.length, finalActive: countActive(r.id), added: out.added,
+    provider: out.provider, error: out.error, recipient: recipientPayload(Q.recipient.get(r.id)), ideas: Q.ideasFor.all(r.id) });
 });
 
 // ---- head-to-head feedback: steer the profile, pull in fresh matching ideas ----

@@ -184,7 +184,7 @@ function renderPerson() {
       ${r.wishlist ? `<p class="gen-note">Wants: ${esc(r.wishlist)}</p>` : ''}
       <div class="form-actions">
         <button class="btn primary" id="p-battle" ${active.length < 2 ? 'disabled' : ''}>Head-to-Head (${active.length})</button>
-        <button class="btn gold" id="p-refine" ${active.length < 4 ? 'disabled' : ''} title="Keep your top 25% by Elo and breed fresh ideas from the winners">✨ Refine from winners</button>
+        <button class="btn gold" id="p-refine" ${active.length < 4 ? 'disabled' : ''} title="Keep your top 50% by Elo and replace the bottom 50% with fresh ideas">✨ Refine from winners</button>
         <button class="btn gold" id="p-generate">Generate more ideas</button>
         <button class="btn ghost" id="p-edit">Edit person</button>
         <button class="btn ghost" id="p-add">Add idea manually</button>
@@ -267,8 +267,8 @@ async function doRefine(fromBattle) {
   const r = STATE.person; if (!r) return;
   const active = (fromBattle && STATE.battle) ? STATE.battle.pool : STATE.ideas.filter((i) => i.status === 'active');
   if (active.length < 4) { toast('Battle a few ideas first so there are winners to keep', true); return; }
-  const keepN = Math.max(5, Math.ceil(active.length * 0.25));
-  if (!confirm(`Keep your top ${keepN} ideas (the highest Elo) for ${r.name}, retire the other ${active.length - keepN}, and add fresh ideas inspired by the winners?`)) return;
+  const keepN = Math.max(5, Math.ceil(active.length * 0.5));
+  if (!confirm(`Keep your top ${keepN} ideas (the highest Elo) for ${r.name}, replace the bottom ${active.length - keepN} with fresh ideas inspired by the winners, and keep at least 80 in play?`)) return;
   const statusEl = fromBattle ? null : $('#gen-status');
   if (statusEl) statusEl.innerHTML = '<span class="spinner"></span> Keeping your winners and breeding fresh ideas...';
   else toast('Refining from your top picks...');
@@ -376,7 +376,7 @@ function renderBattle() {
       <button class="btn ghost" id="b-undo" ${st.history && st.history.length ? '' : 'disabled'}>↶ Undo</button>
       <button class="btn red" id="b-neither">↓ Neither</button>
       <button class="btn ghost" id="b-skip">Skip pair</button>
-      <button class="btn gold" id="b-refine" title="Keep the top 25% and breed fresh ideas from the winners">✨ Refine</button>
+      <button class="btn gold" id="b-refine" title="Keep top 50%, replace bottom 50% with fresh ideas">✨ Refine</button>
       <button class="btn ghost" id="b-done">Done</button>
     </div>
     <div class="fb-box">
