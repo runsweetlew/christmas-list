@@ -17,9 +17,9 @@ function buildPrompt(person, avoidTitles, liked, rejected) {
   const wish = (person.wishlist || '').trim();
   const fb = (person.feedback || '').trim();
   const latest = fb ? fb.split('|').map((s) => s.trim()).filter(Boolean).pop() : '';
-  const avoid = (avoidTitles || []).slice(-70); // most recent, to keep the prompt tight
-  const likes = (liked || []).slice(0, 18);
-  const rejTitles = ((rejected && rejected.titles) || []).slice(0, 24);
+  const avoid = (avoidTitles || []).slice(-40); // most recent, to keep the prompt tight
+  const likes = (liked || []).slice(0, 14);
+  const rejTitles = ((rejected && rejected.titles) || []).slice(0, 16);
   const rejCats = ((rejected && rejected.cats) || []).slice(0, 8);
   return [
     `You are a sharp, tasteful personal gift concierge. Propose genuinely good, SPECIFIC, somewhat novel gift ideas for ONE person.`,
@@ -66,23 +66,39 @@ function extractJson(text) {
   try { return JSON.parse(t.slice(start, end + 1)); } catch (e) { return null; }
 }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function callGroq(prompt) {
   if (!GROQ_KEY) return null;
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${GROQ_KEY}` },
-    body: JSON.stringify({
-      model: GROQ_MODEL,
-      temperature: 0.9,
-      messages: [
-        { role: 'system', content: 'You output only strict JSON. No markdown, no commentary.' },
-        { role: 'user', content: prompt }
-      ]
-    })
-  });
-  if (!res.ok) throw new Error('groq ' + res.status + ' ' + (await res.text()).slice(0, 300));
-  const j = await res.json();
-  return j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+  // Groq free tier is ~8k tokens/min; parallel rounds can trip a 429. Retry with
+  // the server-suggested backoff so bursts recover instead of failing.
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${GROQ_KEY}` },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        temperature: 0.9,
+        messages: [
+          { role: 'system', content: 'You output only strict JSON. No markdown, no commentary.' },
+          { role: 'user', content: prompt }
+        ]
+      })
+    });
+    if (res.status === 429) {
+      const body = await res.text();
+      const m = body.match(/try again in ([\d.]+)\s*(ms|s)/i);
+      let wait = 1400;
+      if (m) wait = m[2].toLowerCase() === 's' ? parseFloat(m[1]) * 1000 : parseFloat(m[1]);
+      wait = Math.min(9000, Math.max(500, wait)) + 400 * attempt;
+      await sleep(wait);
+      continue;
+    }
+    if (!res.ok) throw new Error('groq ' + res.status + ' ' + (await res.text()).slice(0, 200));
+    const j = await res.json();
+    return j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+  }
+  throw new Error('groq rate-limited after retries');
 }
 
 async function callGemini(prompt) {

@@ -146,7 +146,7 @@ function openPersonEditor(id) {
         toast('Saved. Pulling in fresh ideas to match...');
         await openPerson(id);
         const gs = $('#gen-status'); if (gs) gs.innerHTML = '<span class="spinner"></span> Updating the idea pool for ' + esc(body.name) + '...';
-        const res = await api.post('/api/recipients/' + id + '/generate', { rounds: 4 });
+        const res = await api.post('/api/recipients/' + id + '/generate', { rounds: 2 });
         await openPerson(id);
         toast(res.added ? `Added ${res.added} re-targeted ideas` : 'Profile saved', res.error && !res.added);
       } else if (id) {
@@ -273,7 +273,7 @@ async function doRefine(fromBattle) {
   if (statusEl) statusEl.innerHTML = '<span class="spinner"></span> Keeping your winners and breeding fresh ideas...';
   else toast('Refining from your top picks...');
   try {
-    const res = await api.post('/api/recipients/' + r.id + '/refine', { rounds: 3 });
+    const res = await api.post('/api/recipients/' + r.id + '/refine', { rounds: 2 });
     toast(`Kept ${res.kept}, retired ${res.retired}, added ${res.added} fresh ideas ✨`, res.error && !res.added);
     if (fromBattle) await openBattle(r.id); else await openPerson(r.id);
   } catch (e) { toast('Refine failed: ' + e.message, true); if (statusEl) statusEl.textContent = ''; }
@@ -354,6 +354,7 @@ function renderBattle() {
   const r = STATE.person, st = STATE.battle, [a, b] = st.pair;
   const lb = [...st.pool].sort((x, y) => y.rating - x.rating).slice(0, 6);
   $('#battle-wrap').innerHTML = `
+    <button class="back" id="b-back">&larr; Back to ${esc(r.emoji)} ${esc(r.name)}</button>
     <div class="battle-top">
       <h1>This or That</h1>
       <div class="who">${esc(r.emoji)} for ${esc(r.name)}</div>
@@ -403,6 +404,7 @@ function renderBattle() {
   $$('#battle-wrap [data-mini]').forEach((btn) => btn.addEventListener('click', (e) => {
     e.stopPropagation(); miniAction(+btn.dataset.id, btn.dataset.mini);
   }));
+  $('#b-back').onclick = () => openPerson(STATE.person.id);
   $('#b-skip').onclick = nextPair;
   $('#b-undo').onclick = undoLast;
   $('#b-refine').onclick = () => doRefine(true);
@@ -477,7 +479,7 @@ async function submitFeedback(text) {
   text = (text || '').trim(); if (!text) return;
   const btn = $('#fb-apply'); if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; }
   try {
-    const res = await api.post('/api/recipients/' + STATE.person.id + '/feedback', { text, rounds: 3 });
+    const res = await api.post('/api/recipients/' + STATE.person.id + '/feedback', { text, rounds: 2 });
     toast(res.added ? `Pulled in ${res.added} new ideas from your feedback` : (res.error ? 'Idea engine busy, feedback saved' : 'Feedback saved'), res.error && !res.added);
     await openBattle(STATE.person.id); // reload pool with fresh, re-targeted ideas
   } catch (e) { toast('Feedback failed: ' + e.message, true); if (btn) { btn.disabled = false; btn.textContent = 'Apply'; } }
