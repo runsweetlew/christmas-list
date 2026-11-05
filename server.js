@@ -41,6 +41,8 @@ const Q = {
     (recipient_id, title, descr, category, est_price, retailer, search_url, product_url, image, source, why, created, updated)
     VALUES (@recipient_id,@title,@descr,@category,@est_price,@retailer,@search_url,@product_url,@image,@source,@why,@created,@updated)`),
   titlesFor: db.prepare('SELECT title FROM ideas WHERE recipient_id = ?'),
+  banishedFor: db.prepare("SELECT title, category FROM ideas WHERE recipient_id = ? AND status = 'hidden' ORDER BY updated DESC LIMIT 30"),
+  losersFor: db.prepare("SELECT title, category FROM ideas WHERE recipient_id = ? AND status = 'active' AND battles > 0 ORDER BY rating ASC LIMIT 12"),
   updRating: db.prepare('UPDATE ideas SET rating=@rating, battles=battles+1, updated=@updated WHERE id=@id'),
   setRatingExact: db.prepare('UPDATE ideas SET rating=@rating, battles=@battles, updated=@updated WHERE id=@id'),
   setStatus: db.prepare('UPDATE ideas SET status=@status, updated=@updated WHERE id=@id'),
@@ -136,9 +138,18 @@ async function runGeneration(r, rounds, liked) {
   const seen = new Set(Q.titlesFor.all(r.id).map((x) => x.title.toLowerCase()));
   const ts = nowIso();
   let added = 0, provider = 'none', lastError = null;
+  // Negative signal: what the shopper banished + the gifts losing head-to-head,
+  // so the model stops suggesting unwanted things and whole unwanted categories.
+  const banished = Q.banishedFor.all(r.id);
+  const losers = Q.losersFor.all(r.id);
+  const rejTitles = [...banished.map((x) => x.title), ...losers.slice(0, 6).map((x) => x.title)];
+  const catCount = {};
+  for (const b of banished) { if (b.category) catCount[b.category] = (catCount[b.category] || 0) + 1; }
+  const rejCats = Object.entries(catCount).filter(([, n]) => n >= 2).sort((a, b) => b[1] - a[1]).map((e) => e[0]).slice(0, 8);
+  const rejected = { titles: rejTitles, cats: rejCats };
   // Run all rounds concurrently so N rounds take ~1 call of latency instead of N.
   const avoid = Array.from(seen);
-  const results = await Promise.all(Array.from({ length: rounds }, () => generateIdeas(r, avoid, liked)));
+  const results = await Promise.all(Array.from({ length: rounds }, () => generateIdeas(r, avoid, liked, rejected)));
   const all = [];
   for (const { ideas, provider: p, error } of results) {
     if (p && p !== 'none') provider = p;
@@ -185,12 +196,9 @@ app.post('/api/recipients/:id/refine', async (req, res) => {
   const retire = active.slice(keepN);
   const ts = nowIso();
   db.transaction(() => { for (const it of retire) Q.setStatus.run({ id: it.id, status: 'hidden', updated: ts }); })();
-  // remember the lean so future generations stay on-taste
-  const topCats = [...new Set(keep.map((i) => i.category).filter(Boolean))].slice(0, 8).join(', ');
-  if (topCats) {
-    const merged = ((r.feedback ? r.feedback + ' | ' : '') + 'Winners lean toward: ' + topCats).slice(-2000);
-    Q.appendFeedback.run({ id: r.id, feedback: merged, updated: ts });
-  }
+  // Pass the winners as a positive lean for THIS generation only. We intentionally
+  // do NOT write them into the persisted profile feedback, so they never override
+  // the shopper's explicit steering on later runs.
   const liked = keep.map((i) => i.title + (i.category ? ' (' + i.category + ')' : ''));
   const fresh = Q.recipient.get(r.id);
   const rounds = num(req.body && req.body.rounds, 3);

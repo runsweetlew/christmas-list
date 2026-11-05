@@ -12,35 +12,45 @@ function dollars(min, max) {
   return `$${Math.round((min || 0) / 100)} to $${Math.round((max || 20000) / 100)}`;
 }
 
-function buildPrompt(person, avoidTitles, liked) {
+function buildPrompt(person, avoidTitles, liked, rejected) {
   const kw = (person.keywords || '').trim();
   const wish = (person.wishlist || '').trim();
   const fb = (person.feedback || '').trim();
-  const avoid = (avoidTitles || []).slice(0, 120);
-  const likes = (liked || []).slice(0, 20);
+  const latest = fb ? fb.split('|').map((s) => s.trim()).filter(Boolean).pop() : '';
+  const avoid = (avoidTitles || []).slice(-70); // most recent, to keep the prompt tight
+  const likes = (liked || []).slice(0, 18);
+  const rejTitles = ((rejected && rejected.titles) || []).slice(0, 24);
+  const rejCats = ((rejected && rejected.cats) || []).slice(0, 8);
   return [
-    `You are a sharp, tasteful personal gift concierge building a Christmas shopping list.`,
-    `Propose genuinely good, specific, and somewhat novel gift ideas for ONE person.`,
+    `You are a sharp, tasteful personal gift concierge. Propose genuinely good, SPECIFIC, somewhat novel gift ideas for ONE person.`,
+    `Quality and precise fit matter far more than quantity. Obey the SHOPPER STEERING below exactly, above everything else.`,
     ``,
-    `PERSON`,
+    `RECIPIENT`,
     `- Who: ${person.name} (${person.relationship || 'someone'})`,
     person.age ? `- Age: ${person.age}` : '',
     person.gender ? `- Gender: ${person.gender}` : '',
-    kw ? `- Interests / keywords: ${kw}` : '',
-    wish ? `- WHAT THEY SAID THEY WANT (weight this heavily, go deep to match it): ${wish}` : '',
-    fb ? `- SHOPPER FEEDBACK / STEERING (obey this strongly, it reflects what has been liked or rejected so far): ${fb}` : '',
-    likes.length ? `- THESE WON the head-to-head ranking (the recipient's taste clearly leans this way). Propose NEW ideas in the same spirit: similar vibe, brands, category feel, quality and price level, or excellent adjacent picks. Do NOT repeat them: ${likes.join('; ')}` : '',
+    kw ? `- General interests: ${kw}` : '',
+    wish ? `- What they want (wishlist): ${wish}` : '',
     `- Budget per gift: ${dollars(person.budget_min, person.budget_max)}`,
     ``,
+    latest ? `SHOPPER STEERING (HIGHEST PRIORITY, follow precisely; if anything conflicts, the most recent instruction wins):` : '',
+    latest ? `>>> ${latest} <<<` : '',
+    fb && fb !== latest ? `Earlier steering (context, lower priority): ${fb}` : '',
+    ``,
+    likes.length ? `LEAN TOWARD (these won head-to-head; propose fresh ideas in the same spirit, not copies): ${likes.join('; ')}` : '',
+    (rejTitles.length || rejCats.length) ? `AVOID (the shopper has rejected these; do NOT suggest them, and go light on these whole categories unless the steering explicitly asks for them):` : '',
+    rejCats.length ? `- avoid categories: ${rejCats.join(', ')}` : '',
+    rejTitles.length ? `- avoid items like: ${rejTitles.join('; ')}` : '',
+    ``,
     `RULES`,
-    `- Return specific, real, buyable product ideas (name real product categories, lines, or models). Avoid vague ideas like "a nice sweater".`,
-    `- If a wishlist is given, make most ideas clearly satisfy it, plus a few inspired adjacent surprises.`,
-    `- Mix price points inside the budget. No duplicates. Be varied across categories.`,
-    `- Favor interesting / novel finds over the most obvious cliches, but stay practical and giftable.`,
-    avoid.length ? `- Do NOT repeat any of these already-seen ideas: ${avoid.join('; ')}` : '',
+    `- SHOPPER STEERING wins over general interests. If it says "less X" or "no X", exclude X and anything adjacent to X entirely, even if X is in their interests.`,
+    `- Be concrete: real brands, lines, or models (e.g. "Benchmade Bugout knife"), never vague ("a nice gadget").`,
+    `- BESPOKE AND INTERESTING: favor distinctive, memorable, non-obvious gifts, independent makers, well-designed cult items, limited or personalized pieces, experiences, and clever upgrades to what they love. Avoid the generic first-page-of-Amazon picks and holiday cliches. Aim to make the shopper say "oh, that's a great idea" rather than "yeah, obviously."`,
+    `- Vary across different categories within what the steering allows. Mix price points across the budget, including a couple of standout splurges.`,
+    avoid.length ? `- Do NOT repeat these already-shown ideas: ${avoid.join('; ')}` : '',
     ``,
     `Return STRICT JSON only, no prose, shaped exactly as:`,
-    `{"ideas":[{"title":"...","descr":"one punchy sentence on what it is","category":"e.g. Outdoors","est_price":12900,"retailer":"Amazon","search_query":"exact words to search a store for this","why":"one line on why it fits this person"}]}`,
+    `{"ideas":[{"title":"...","descr":"one punchy sentence on what it is","category":"e.g. Outdoors","est_price":12900,"retailer":"Amazon","search_query":"exact words to search a store for this","why":"one line on why it fits this person and the steering"}]}`,
     `est_price is an integer in CENTS. Return 10 ideas.`
   ].filter(Boolean).join('\n');
 }
@@ -121,8 +131,8 @@ function normalize(raw, person) {
 }
 
 // Generate ideas. Returns { ideas: [...], provider: 'groq'|'gemini'|'none', error? }
-async function generateIdeas(person, avoidTitles, liked) {
-  const prompt = buildPrompt(person, avoidTitles, liked);
+async function generateIdeas(person, avoidTitles, liked, rejected) {
+  const prompt = buildPrompt(person, avoidTitles, liked, rejected);
   // Try Groq, then Gemini.
   for (const [name, fn] of [['groq', callGroq], ['gemini', callGemini]]) {
     try {
