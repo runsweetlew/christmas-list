@@ -480,7 +480,10 @@ async function submitFeedback(text) {
   const btn = $('#fb-apply'); if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; }
   try {
     const res = await api.post('/api/recipients/' + STATE.person.id + '/feedback', { text, rounds: 2 });
-    toast(res.added ? `Pulled in ${res.added} new ideas from your feedback` : (res.error ? 'Idea engine busy, feedback saved' : 'Feedback saved'), res.error && !res.added);
+    const parts = [];
+    if (res.purged) parts.push(`removed ${res.purged}`);
+    if (res.added) parts.push(`added ${res.added}`);
+    toast(parts.length ? parts.join(', ') + ' from your feedback' : (res.error ? 'Idea engine busy, feedback saved' : 'Feedback saved'), res.error && !res.added && !res.purged);
     await openBattle(STATE.person.id); // reload pool with fresh, re-targeted ideas
   } catch (e) { toast('Feedback failed: ' + e.message, true); if (btn) { btn.disabled = false; btn.textContent = 'Apply'; } }
 }

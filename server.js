@@ -116,9 +116,15 @@ app.put('/api/recipients/:id', (req, res) => {
   if (!r) return res.status(404).json({ error: 'not found' });
   const c = cleanRecipient(req.body || {});
   // preserve accumulated feedback unless explicitly provided
-  if (req.body.feedback === undefined) c.feedback = r.feedback || '';
+  const fbProvided = req.body.feedback !== undefined;
+  if (!fbProvided) c.feedback = r.feedback || '';
   Q.updRecipient.run({ ...c, id: r.id, updated: nowIso() });
-  res.json({ recipient: recipientPayload(Q.recipient.get(r.id)) });
+  // if the steering notes changed, purge existing ideas that match the avoid terms
+  let purged = 0;
+  if (fbProvided && (c.feedback || '').trim() !== (r.feedback || '').trim()) {
+    purged = purgeAvoid(r.id, c.feedback).purged;
+  }
+  res.json({ recipient: recipientPayload(Q.recipient.get(r.id)), purged });
 });
 
 app.delete('/api/recipients/:id', (req, res) => {
@@ -226,6 +232,37 @@ app.post('/api/recipients/:id/refine', async (req, res) => {
     provider: out.provider, error: out.error, recipient: recipientPayload(Q.recipient.get(r.id)), ideas: Q.ideasFor.all(r.id) });
 });
 
+// Pull "avoid" terms out of free-text steering ("no coffee", "less kitchen stuff").
+function extractAvoidTerms(text) {
+  const t = ' ' + String(text || '').toLowerCase() + ' ';
+  const STOP = new Set(['want', 'wants', 'like', 'likes', 'love', 'more', 'less', 'fewer', 'no', 'nor', 'not', 'dont', 'don', 'nothing', 'stuff', 'things', 'thing', 'item', 'items', 'the', 'an', 'any', 'some', 'really', 'just', 'please', 'into', 'for', 'with', 'without', 'and', 'but', 'or', 'also', 'make', 'sure', 'too', 'much', 'many', 'that', 'this', 'those', 'these', 'such', 'kind', 'type', 'gift', 'gifts', 'idea', 'ideas', 'give', 'show', 'see', 'instead', 'rather', 'avoid', 'skip', 'hate', 'dislike', 'him', 'her', 'them', 'they', 'anything', 'something', 'focus']);
+  const terms = new Set();
+  const clauses = t.split(/[,.;!]| and | but | plus | while /);
+  for (const c of clauses) {
+    if (/\b(no|not|don'?t|less|fewer|without|avoid|skip|hate|dislikes?|nothing|stop|get rid of|not into|steer clear)\b/.test(c)) {
+      for (const w of c.split(/[^a-z]+/)) { if (w.length >= 3 && !STOP.has(w)) terms.add(w); }
+    }
+  }
+  return [...terms];
+}
+function escapeRx(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+// Hide active ideas that match the shopper's avoid terms, so unwanted stuff
+// leaves the head-to-head pool immediately (not just future generations).
+function purgeAvoid(recipientId, text) {
+  const terms = extractAvoidTerms(text);
+  if (!terms.length) return { purged: 0, terms };
+  const rx = new RegExp('\\b(' + terms.map(escapeRx).join('|') + ')', 'i');
+  const act = Q.ideasFor.all(recipientId).filter((i) => i.status === 'active');
+  const ts = nowIso();
+  let purged = 0;
+  db.transaction(() => {
+    for (const it of act) {
+      if (rx.test(it.title + ' ' + it.category + ' ' + it.descr)) { Q.setStatus.run({ id: it.id, status: 'hidden', updated: ts }); purged++; }
+    }
+  })();
+  return { purged, terms };
+}
+
 // ---- head-to-head feedback: steer the profile, pull in fresh matching ideas ----
 app.post('/api/recipients/:id/feedback', async (req, res) => {
   const r = Q.recipient.get(num(req.params.id));
@@ -235,10 +272,14 @@ app.post('/api/recipients/:id/feedback', async (req, res) => {
   // append to the profile's accumulated feedback (most recent last, capped)
   const merged = ((r.feedback ? r.feedback + ' | ' : '') + text).slice(-2000);
   Q.appendFeedback.run({ id: r.id, feedback: merged, updated: nowIso() });
+  // remove existing ideas that match what the shopper just said to avoid
+  const { purged, terms } = purgeAvoid(r.id, text);
   const fresh = Q.recipient.get(r.id);
-  const rounds = num(req.body && req.body.rounds, 3);
+  const rounds = num(req.body && req.body.rounds, 2);
   const out = await runGeneration(fresh, rounds);
-  res.json({ ...out, recipient: recipientPayload(fresh), ideas: Q.ideasFor.all(r.id) });
+  // keep the pool healthy after purging unwanted items
+  if (countActive(r.id) < 80) { const up = await generateUpTo(r.id, 80); out.added += up.added; if (up.provider !== 'none') out.provider = up.provider; }
+  res.json({ ...out, purged, avoided: terms, recipient: recipientPayload(Q.recipient.get(r.id)), ideas: Q.ideasFor.all(r.id) });
 });
 
 // custom manual idea
