@@ -437,6 +437,27 @@ function battleCard(i, side) {
     </div>
   </div>`;
 }
+// Pull fresh, on-taste ideas in the background and merge them into the running
+// battle pool, so the user never waits for generation. Silent on error.
+async function scheduleRefill() {
+  if (STATE.refilling || !STATE.person) return;
+  STATE.refilling = true;
+  const pid = STATE.person.id;
+  try {
+    const before = new Set((STATE.battle ? STATE.battle.pool : STATE.ideas).map((x) => x.id));
+    const res = await api.post('/api/recipients/' + pid + '/generate', { rounds: 2 });
+    if (!STATE.person || STATE.person.id !== pid) return; // user moved on
+    const fresh = res.ideas.filter((i) => i.status === 'active' && !before.has(i.id));
+    STATE.ideas = res.ideas;
+    if (STATE.battle && fresh.length) {
+      const have = new Set(STATE.battle.pool.map((p) => p.id));
+      for (const it of fresh) if (!have.has(it.id)) STATE.battle.pool.push(it);
+      toast(`✨ ${fresh.length} fresh ideas added`);
+    }
+  } catch (e) { /* silent; will retry on the next trigger */ }
+  finally { STATE.refilling = false; }
+}
+
 async function chooseWinner(winnerId) {
   const st = STATE.battle, [a, b] = st.pair;
   const loserId = winnerId === a.id ? b.id : a.id;
@@ -455,6 +476,7 @@ async function chooseWinner(winnerId) {
       win: { t: w ? w.title : '', d: Math.round(res.winner.rating - wOld) },
       lose: { t: l ? l.title : '', d: Math.round(res.loser.rating - lOld) } };
   } catch (e) { /* keep going */ }
+  if (st.count % 50 === 0) scheduleRefill(); // auto top-up in the background
   nextPair();
 }
 async function chooseNeither() {
@@ -473,18 +495,17 @@ async function chooseNeither() {
       a: { t: a.title, d: Math.round((res.a ? res.a.rating : aOld) - aOld) },
       b: { t: b.title, d: Math.round((res.b ? res.b.rating : bOld) - bOld) } };
   } catch (e) { /* keep going */ }
+  if (st.count % 50 === 0) scheduleRefill(); // auto top-up in the background
   nextPair();
 }
 async function submitFeedback(text) {
   text = (text || '').trim(); if (!text) return;
   const btn = $('#fb-apply'); if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; }
   try {
-    const res = await api.post('/api/recipients/' + STATE.person.id + '/feedback', { text, rounds: 2 });
-    const parts = [];
-    if (res.purged) parts.push(`removed ${res.purged}`);
-    if (res.added) parts.push(`added ${res.added}`);
-    toast(parts.length ? parts.join(', ') + ' from your feedback' : (res.error ? 'Idea engine busy, feedback saved' : 'Feedback saved'), res.error && !res.added && !res.purged);
-    await openBattle(STATE.person.id); // reload pool with fresh, re-targeted ideas
+    const res = await api.post('/api/recipients/' + STATE.person.id + '/feedback', { text });
+    toast(res.purged ? `Removed ${res.purged}. Finding fresh ideas in the background...` : 'Steering saved. Finding fresh ideas in the background...');
+    await openBattle(STATE.person.id); // reload the purged pool instantly
+    scheduleRefill(); // pull new on-taste ideas in the background
   } catch (e) { toast('Feedback failed: ' + e.message, true); if (btn) { btn.disabled = false; btn.textContent = 'Apply'; } }
 }
 async function miniAction(id, act) {

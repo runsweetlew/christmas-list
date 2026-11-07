@@ -61,7 +61,7 @@ async function resolveProduct(title) {
 async function resolveImage(title) { return (await resolveProduct(title)).image; }
 
 // Resolve many titles concurrently. Returns Map(title -> {image, page}).
-async function resolveMany(titles, conc = 6) {
+async function resolveMany(titles, conc = 8) {
   const out = new Map();
   let i = 0;
   async function worker() {

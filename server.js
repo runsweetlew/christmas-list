@@ -272,14 +272,10 @@ app.post('/api/recipients/:id/feedback', async (req, res) => {
   // append to the profile's accumulated feedback (most recent last, capped)
   const merged = ((r.feedback ? r.feedback + ' | ' : '') + text).slice(-2000);
   Q.appendFeedback.run({ id: r.id, feedback: merged, updated: nowIso() });
-  // remove existing ideas that match what the shopper just said to avoid
+  // remove existing ideas that match what the shopper just said to avoid. This is
+  // instant (no AI); fresh on-taste ideas are pulled in afterward in the background.
   const { purged, terms } = purgeAvoid(r.id, text);
-  const fresh = Q.recipient.get(r.id);
-  const rounds = num(req.body && req.body.rounds, 2);
-  const out = await runGeneration(fresh, rounds);
-  // keep the pool healthy after purging unwanted items
-  if (countActive(r.id) < 80) { const up = await generateUpTo(r.id, 80); out.added += up.added; if (up.provider !== 'none') out.provider = up.provider; }
-  res.json({ ...out, purged, avoided: terms, recipient: recipientPayload(Q.recipient.get(r.id)), ideas: Q.ideasFor.all(r.id) });
+  res.json({ purged, avoided: terms, recipient: recipientPayload(Q.recipient.get(r.id)), ideas: Q.ideasFor.all(r.id) });
 });
 
 // custom manual idea
