@@ -17,13 +17,29 @@ Live demo: https://christmas.lewbutler.com
 - **Steer the ideas**: type feedback mid-battle ("less kitchen stuff, more fishing
   gear") and the pool updates with fresh, re-targeted ideas; the note is saved to the
   profile so future ideas stay on-taste.
-- **Refine from winners**: keep the top 25% by Elo, retire the rest, and breed new
+- **Refine from winners**: keep the top 50% by Elo, retire the rest, and breed new
   ideas inspired by what rose to the top. Loop it to converge on great gifts.
 - **Shopping list**: everything you star, grouped by person, with a concrete product
   link, a price-watch graph over time, target prices, mark-as-bought, and running
   totals.
 - **Photos on everything**: catalog items and AI-generated ideas get real product
   photos resolved from web image search (no paid key required).
+
+## Accounts & sharing
+
+- **Accounts**: every list is private to a signed-in user. Sign up or log in with email
+  and password; sessions are kept in an HttpOnly cookie. A new account starts empty,
+  with an optional "add sample people" seed. New recipients get their head-to-head pool
+  pre-filled from the catalog by keyword match so you can start battling immediately.
+- **Optional sign-in methods**: Google sign-in and passwordless magic-link email are
+  wired in and light up when configured. Set `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`
+  for the Google button, and `SMTP_HOST` (plus the other `SMTP_*` vars) for magic-link
+  email. Leave them blank to keep those methods hidden. See `.env.example`.
+- **Share a list**: from a person's page you can mint an unlisted share link. Anyone with
+  the link can view that one recipient's listed items and claim what they plan to buy so
+  no one doubles up. Share links are `noindex`, can be reset (rotating the old one away)
+  or disabled, and "surprise mode" hides claimers from you. Claims are name-tagged and
+  rate-limited; no account is needed to view or claim.
 
 ## Design
 
