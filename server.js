@@ -165,7 +165,7 @@ app.put('/api/recipients/:id', (req, res) => {
   if (fbProvided && (c.feedback || '').trim() !== (r.feedback || '').trim()) {
     purged = purgeAvoid(r.id, c.feedback).purged;
   }
-  res.json({ recipient: recipientPayload(Q.recipient.get(r.id)), purged });
+  res.json({ recipient: recipientPayload(Q.recipient.get(r.id, req.user.id)), purged });
 });
 
 app.delete('/api/recipients/:id', (req, res) => {
