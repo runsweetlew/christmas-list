@@ -72,11 +72,55 @@ CREATE TABLE IF NOT EXISTS meta (
 );
 `);
 
+db.exec(`
+CREATE TABLE IF NOT EXISTS users (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  email         TEXT UNIQUE,
+  name          TEXT NOT NULL DEFAULT '',
+  password_hash TEXT,
+  google_sub    TEXT UNIQUE,
+  created        TEXT NOT NULL DEFAULT '',
+  updated        TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+  token    TEXT PRIMARY KEY,
+  user_id  INTEGER NOT NULL,
+  expires  TEXT NOT NULL,
+  created  TEXT NOT NULL DEFAULT '',
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+
+CREATE TABLE IF NOT EXISTS login_tokens (
+  token   TEXT PRIMARY KEY,
+  email   TEXT NOT NULL,
+  expires TEXT NOT NULL,
+  used    INTEGER NOT NULL DEFAULT 0,
+  created TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS claims (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  idea_id      INTEGER NOT NULL,
+  claimer_name TEXT NOT NULL DEFAULT '',
+  note         TEXT NOT NULL DEFAULT '',
+  created      TEXT NOT NULL DEFAULT '',
+  FOREIGN KEY (idea_id) REFERENCES ideas(id)
+);
+CREATE INDEX IF NOT EXISTS idx_claims_idea ON claims(idea_id);
+`);
+
 // lightweight migrations for pre-existing databases
 function ensureColumn(table, col, decl) {
   const cols = db.prepare(`PRAGMA table_info(${table})`).all().map((c) => c.name);
   if (!cols.includes(col)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${decl}`);
 }
 ensureColumn('recipients', 'feedback', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('recipients', 'user_id', 'INTEGER');
+ensureColumn('recipients', 'share_token', 'TEXT');
+ensureColumn('recipients', 'share_hide_claims', 'INTEGER NOT NULL DEFAULT 0');
+db.exec('CREATE INDEX IF NOT EXISTS idx_recipients_user ON recipients(user_id)');
+db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_recipients_share ON recipients(share_token) WHERE share_token IS NOT NULL');
 
 module.exports = { db, DATA_DIR };
