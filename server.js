@@ -340,7 +340,37 @@ const catalog = (() => { try { return require('./seed/catalog.json'); } catch (e
 // lead with interest-matched photographed items, then fill with photographed,
 // gender/budget-appropriate catalog items so there's plenty to consider.
 const POOL_TARGET = 110;
-function selectPool(r, cat, target = POOL_TARGET) {
+
+// What has this recipient rejected? Returns categories they've banished >=2x that
+// are NOT among their stated interests (so nixing a few aviation items doesn't ban
+// all aviation, but repeatedly banishing cookware bans kitchen stuff), plus any
+// avoid-terms pulled from their steering notes. Used to keep the pool filler from
+// re-introducing disliked items.
+function recipientAvoid(r) {
+  let hidden = [];
+  try { hidden = db.prepare("SELECT category FROM ideas WHERE recipient_id = ? AND status = 'hidden'").all(r.id); } catch (e) {}
+  const cnt = {};
+  for (const h of hidden) { const c = (h.category || '').toLowerCase().trim(); if (c) cnt[c] = (cnt[c] || 0) + 1; }
+  const interest = new Set(((r.keywords || '') + ' ' + (r.wishlist || '')).toLowerCase().split(/[^a-z]+/).filter((w) => w.length >= 4));
+  const avoidCats = new Set();
+  for (const [c, n] of Object.entries(cnt)) {
+    if (n < 2) continue;
+    const words = c.split(/[^a-z]+/).filter(Boolean);
+    const isInterest = words.some((w) => [...interest].some((iw) => w.includes(iw) || iw.includes(w)));
+    if (!isInterest) avoidCats.add(c);
+  }
+  const terms = extractAvoidTerms(r.feedback || '');
+  const termRx = terms.length ? new RegExp('\\b(' + terms.map(escapeRx).join('|') + ')', 'i') : null;
+  return { avoidCats, termRx };
+}
+function matchesAvoid(it, avoid) {
+  if (!avoid) return false;
+  if (avoid.avoidCats.has((it.category || '').toLowerCase().trim())) return true;
+  if (avoid.termRx && avoid.termRx.test((it.title || '') + ' ' + (it.category || '') + ' ' + (it.descr || ''))) return true;
+  return false;
+}
+
+function selectPool(r, cat, target = POOL_TARGET, avoid = null) {
   const g = (r.gender || '').toLowerCase();
   const wantF = /^f|female|woman|women/.test(g);
   const wantM = /^m|male|man|men/.test(g);
@@ -348,6 +378,7 @@ function selectPool(r, cat, target = POOL_TARGET) {
   const dog = /\bdogs?\b|\bpuppy\b/.test(hay);
   const ceiling = (Number(r.budget_max) || 20000) * 1.4;
   const okTag = (i) => {
+    if (matchesAvoid(i, avoid)) return false; // never fill in a disliked category/term
     const t = i.tags || [];
     if (dog) return t.includes('dogs');
     if (t.includes('dogs')) return false;
@@ -375,7 +406,7 @@ function selectPool(r, cat, target = POOL_TARGET) {
 
 async function populatePool(r) {
   if (!catalog.length) return 0;
-  const picks = selectPool(r, catalog);
+  const picks = selectPool(r, catalog, POOL_TARGET, recipientAvoid(r));
   const ts = nowIso();
   const tx = db.transaction(() => {
     for (const it of picks) {
