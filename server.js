@@ -346,28 +346,57 @@ const POOL_TARGET = 110;
 // all aviation, but repeatedly banishing cookware bans kitchen stuff), plus any
 // avoid-terms pulled from their steering notes. Used to keep the pool filler from
 // re-introducing disliked items.
+const AVOID_STOP = new Set(['with', 'your', 'sets', 'kits', 'tool', 'tools', 'gift', 'gifts', 'pack', 'piece', 'pieces', 'inch', 'premium', 'classic', 'ultimate', 'mini', 'large', 'small', 'steel', 'stainless', 'nonstick', 'wireless', 'original', 'deluxe', 'edition', 'bundle', 'accessory', 'accessories', 'kit']);
+// Interest clusters so that nixing specific items in an interest doesn't ban the
+// theme: a shopper into "bourbon" also implicitly likes whiskey/barware, "truck"
+// covers cars/auto, "aviation" covers flight/pilot, etc.
+const INTEREST_CLUSTERS = [
+  ['bourbon', 'whiskey', 'whisky', 'scotch', 'rye', 'spirits', 'liquor', 'barware', 'cocktail', 'distill', 'bartending'],
+  ['truck', 'car', 'cars', 'auto', 'automotive', 'vehicle', 'garage', 'motor', 'driving'],
+  ['aviation', 'flight', 'pilot', 'aircraft', 'aeronautical', 'flying', 'aero', 'airplane'],
+  ['fishing', 'boating', 'boat', 'marine', 'tackle', 'angler', 'kayak'],
+  ['camping', 'hiking', 'outdoor', 'outdoors', 'trail', 'backpack'],
+  ['coffee', 'espresso', 'barista'],
+  ['cooking', 'kitchen', 'baking', 'bakeware', 'cookware', 'culinary', 'chef', 'grilling', 'grill'],
+  ['running', 'fitness', 'gym', 'workout', 'exercise'],
+  ['golf', 'golfing'],
+  ['nerd', 'tech', 'technology', 'gaming', 'gamer', 'gadget', 'geek', 'science', 'computer', 'electronics'],
+  ['music', 'vinyl', 'audio', 'headphone', 'records'],
+  ['reading', 'books', 'book', 'literature'],
+  ['gardening', 'garden', 'plant', 'plants'],
+  ['beauty', 'skincare', 'makeup', 'cosmetics'],
+  ['jewelry', 'jewellery', 'necklace', 'earrings', 'bracelet']
+];
 function recipientAvoid(r) {
   let hidden = [];
-  try { hidden = db.prepare("SELECT category FROM ideas WHERE recipient_id = ? AND status = 'hidden'").all(r.id); } catch (e) {}
-  const cnt = {};
-  for (const h of hidden) { const c = (h.category || '').toLowerCase().trim(); if (c) cnt[c] = (cnt[c] || 0) + 1; }
+  try { hidden = db.prepare("SELECT category, title FROM ideas WHERE recipient_id = ? AND status = 'hidden'").all(r.id); } catch (e) {}
   const interest = new Set(((r.keywords || '') + ' ' + (r.wishlist || '')).toLowerCase().split(/[^a-z]+/).filter((w) => w.length >= 4));
-  const avoidCats = new Set();
-  for (const [c, n] of Object.entries(cnt)) {
-    if (n < 2) continue;
-    const words = c.split(/[^a-z]+/).filter(Boolean);
-    const isInterest = words.some((w) => [...interest].some((iw) => w.includes(iw) || iw.includes(w)));
-    if (!isInterest) avoidCats.add(c);
+  // expand interests with their cluster synonyms so interest-adjacent words are safe
+  const safe = new Set(interest);
+  for (const w of interest) for (const cl of INTEREST_CLUSTERS) if (cl.some((c) => w.includes(c) || c.includes(w))) cl.forEach((c) => safe.add(c));
+  const isInterest = (w) => [...safe].some((iw) => w.includes(iw) || iw.includes(w));
+  // Data-driven: the words that characterize what the shopper keeps banishing
+  // (from the categories + titles of hidden items), excluding their interests and
+  // generic filler. Words that recur >=3x become avoid terms.
+  // Use CATEGORY words only (not titles): banishing individual aviation items
+  // must not turn "flight"/"pilot" into avoid-terms and kill an interest. Words
+  // that recur across the categories of >=2 banished items become avoid-terms,
+  // so "Baking"/"Baking Tools"/"Baking Kits" all collapse to "baking".
+  const bag = {};
+  for (const h of hidden) {
+    for (const w of new Set((h.category || '').toLowerCase().split(/[^a-z]+/))) {
+      if (w.length >= 4 && !AVOID_STOP.has(w) && !isInterest(w)) bag[w] = (bag[w] || 0) + 1;
+    }
   }
-  const terms = extractAvoidTerms(r.feedback || '');
+  const terms = Object.entries(bag).filter(([, n]) => n >= 2).map(([w]) => w);
+  // also honor explicit avoid-terms from steering notes
+  for (const t of extractAvoidTerms(r.feedback || '')) if (!isInterest(t) && !terms.includes(t)) terms.push(t);
   const termRx = terms.length ? new RegExp('\\b(' + terms.map(escapeRx).join('|') + ')', 'i') : null;
-  return { avoidCats, termRx };
+  return { terms, termRx };
 }
 function matchesAvoid(it, avoid) {
-  if (!avoid) return false;
-  if (avoid.avoidCats.has((it.category || '').toLowerCase().trim())) return true;
-  if (avoid.termRx && avoid.termRx.test((it.title || '') + ' ' + (it.category || '') + ' ' + (it.descr || ''))) return true;
-  return false;
+  if (!avoid || !avoid.termRx) return false;
+  return avoid.termRx.test((it.title || '') + ' ' + (it.category || '') + ' ' + (it.descr || ''));
 }
 
 function selectPool(r, cat, target = POOL_TARGET, avoid = null) {
