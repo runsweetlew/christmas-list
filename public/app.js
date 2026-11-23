@@ -17,9 +17,14 @@ function imgHtml(image, title, imgClass, phClass) {
 }
 
 const api = {
-  async get(u) { const r = await fetch(u); if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.status); return r.json(); },
+  async get(u) {
+    const r = await fetch(u);
+    if (r.status === 401) { showAuthGate(); throw new Error('not signed in'); }
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.status); return r.json();
+  },
   async send(u, method, body) {
     const r = await fetch(u, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+    if (r.status === 401) { showAuthGate(); throw new Error('not signed in'); }
     if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.status);
     return r.json();
   },
@@ -34,6 +39,71 @@ function toast(msg, isErr) {
   const t = $('#toast');
   t.textContent = msg; t.hidden = false; t.classList.toggle('err', !!isErr);
   clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, 2600);
+}
+
+/* ---------------- auth gate ---------------- */
+const AUTH = { user: null };
+function showAuthGate() { const g = document.getElementById('auth-gate'); if (g) g.hidden = false; }
+function hideAuthGate() { const g = document.getElementById('auth-gate'); if (g) g.hidden = true; }
+
+async function initAuth() {
+  const cfg = await fetch('/api/auth/config').then((r) => r.json()).catch(() => ({ password: true }));
+  const me = await fetch('/api/auth/me').then((r) => r.json()).catch(() => ({ user: null }));
+  renderAuthAlt(cfg);
+  if (me.user) { AUTH.user = me.user; hideAuthGate(); return true; }
+  showAuthGate();
+  return false;
+}
+
+function renderAuthAlt(cfg) {
+  const alt = document.getElementById('auth-alt');
+  if (!alt) return;
+  let html = '';
+  if (cfg.google) html += `<a class="auth-google" href="/api/auth/google">Continue with Google</a>`;
+  if (cfg.magic) html += `<p class="auth-magic"><a href="#" id="auth-magic-link">Email me a sign-in link instead</a></p>`;
+  alt.innerHTML = html;
+  if (cfg.magic) document.getElementById('auth-magic-link').addEventListener('click', onMagic);
+}
+
+let AUTH_MODE = 'login';
+function wireAuthForm() {
+  const form = document.getElementById('auth-form');
+  if (!form) return;
+  const err = document.getElementById('auth-err');
+  const nameRow = document.getElementById('auth-name-row');
+  document.getElementById('auth-switch').addEventListener('click', (e) => {
+    e.preventDefault();
+    AUTH_MODE = AUTH_MODE === 'login' ? 'signup' : 'login';
+    nameRow.hidden = AUTH_MODE === 'login';
+    document.getElementById('auth-submit').textContent = AUTH_MODE === 'login' ? 'Sign in' : 'Create account';
+    document.getElementById('auth-switch').textContent = AUTH_MODE === 'login' ? 'New here? Create an account' : 'Have an account? Sign in';
+    document.getElementById('auth-password').autocomplete = AUTH_MODE === 'login' ? 'current-password' : 'new-password';
+  });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    err.hidden = true;
+    const body = JSON.stringify({
+      name: document.getElementById('auth-name').value,
+      email: document.getElementById('auth-email').value,
+      password: document.getElementById('auth-password').value
+    });
+    try {
+      const r = await fetch('/api/auth/' + (AUTH_MODE === 'login' ? 'login' : 'signup'),
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'could not sign in');
+      AUTH.user = d.user; hideAuthGate(); location.reload();
+    } catch (ex) { err.textContent = ex.message; err.hidden = false; }
+  });
+}
+
+async function onMagic(e) {
+  e.preventDefault();
+  const email = document.getElementById('auth-email').value.trim();
+  if (!email) { document.getElementById('auth-email').focus(); return; }
+  await fetch('/api/auth/magic/request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+  const err = document.getElementById('auth-err');
+  err.textContent = 'Check your email for a sign-in link.'; err.hidden = false;
 }
 
 /* ---------------- view switching ---------------- */
@@ -188,7 +258,9 @@ function renderPerson() {
         <button class="btn gold" id="p-generate">Generate more ideas</button>
         <button class="btn ghost" id="p-edit">Edit person</button>
         <button class="btn ghost" id="p-add">Add idea manually</button>
+        <button class="btn ghost share-toggle-btn" id="share-btn" data-id="${r.id}">${r.shared ? '🔗 Manage share link' : '🔗 Share this list'}</button>
       </div>
+      <div id="share-panel" class="share-panel" hidden></div>
       <div id="gen-status" class="gen-note" style="margin-top:10px"></div>
     </div>
     ${listed.length ? sectionHtml('★ On the shopping list', listed) : ''}
@@ -201,6 +273,46 @@ function renderPerson() {
   $('#p-battle').onclick = () => { openBattle(r.id); showView('battle'); };
   $('#p-edit').onclick = () => openPersonEditor(r.id);
   $('#p-add').onclick = () => openIdeaEditor(r.id);
+  $('#share-btn').onclick = () => openSharePanel(STATE.person);
+}
+
+async function openSharePanel(recipient) {
+  const panel = $('#share-panel');
+  if (!panel) return;
+  let d;
+  try { d = await api.post('/api/recipients/' + recipient.id + '/share'); }
+  catch (e) { toast('Could not create share link: ' + e.message, true); return; }
+  panel.hidden = false;
+  panel.innerHTML = `
+    <p class="share-help">Anyone with this link can view ${esc(recipient.name)}'s list and claim items. It is unlisted.</p>
+    <div class="share-url-row">
+      <input id="share-url" readonly value="${attr(d.url)}" />
+      <button class="btn ghost sm" id="share-copy">Copy</button>
+    </div>
+    <label class="share-surprise"><input type="checkbox" id="share-hide" ${d.hideClaims ? 'checked' : ''}/> Surprise mode (hide who claimed what from me)</label>
+    <div class="share-actions">
+      <button class="btn ghost sm" id="share-rotate">Reset link</button>
+      <button class="btn ghost sm" id="share-disable">Stop sharing</button>
+    </div>`;
+  $('#share-copy').onclick = () => {
+    const el = $('#share-url'); el.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(el.value);
+    toast('Link copied');
+  };
+  $('#share-hide').onchange = async (e) => {
+    try { await api.put('/api/recipients/' + recipient.id + '/share', { hideClaims: e.target.checked }); toast('Updated'); }
+    catch (err) { toast('Could not update: ' + err.message, true); }
+  };
+  $('#share-rotate').onclick = async () => {
+    try {
+      const r2 = await api.post('/api/recipients/' + recipient.id + '/share/rotate');
+      $('#share-url').value = r2.url; toast('New link created; the old one no longer works');
+    } catch (err) { toast('Could not reset: ' + err.message, true); }
+  };
+  $('#share-disable').onclick = async () => {
+    try { await api.del('/api/recipients/' + recipient.id + '/share'); panel.hidden = true; toast('Sharing stopped'); }
+    catch (err) { toast('Could not stop sharing: ' + err.message, true); }
+  };
 }
 function sectionHtml(title, items) {
   return `<div class="ideas-head"><h3>${title} (${items.length})</h3></div><div class="idea-grid">${items.map(ideaCard).join('')}</div>`;
@@ -209,6 +321,8 @@ function ideaCard(i) {
   const price = i.last_price || i.est_price;
   const pill = i.status === 'listed' ? '<span class="status-pill listed">★ Listed</span>'
     : i.status === 'purchased' ? '<span class="status-pill purchased">✓ Bought</span>' : '';
+  const claimBadge = (i.claims && i.claims.length)
+    ? `<span class="claim-badge">Claimed by ${esc(i.claims.map((c) => c.claimer_name).join(', '))}</span>` : '';
   let actions;
   if (i.status === 'active') {
     actions = `<a class="btn ghost sm" href="${attr(link(i))}" target="_blank" rel="noopener">View</a>
@@ -226,7 +340,7 @@ function ideaCard(i) {
     ${pill}
     <div class="thumb">${imgHtml(i.image, i.title, 'ti', 'ph')}</div>
     <div class="body">
-      <div class="cat">${esc(i.category || i.retailer || 'Gift')}</div>
+      <div class="cat">${esc(i.category || i.retailer || 'Gift')}${claimBadge}</div>
       <h4>${esc(i.title)}</h4>
       <div class="descr">${esc(i.descr)}</div>
       ${i.why ? `<div class="why">${esc(i.why)}</div>` : ''}
@@ -670,4 +784,18 @@ $('#modal-close').onclick = closeModal;
 $('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
 
 /* boot */
-loadList();
+function startApp() {
+  const lo = document.getElementById('logout-btn');
+  if (lo) lo.addEventListener('click', async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    location.reload();
+  });
+  loadList();
+}
+
+(async () => {
+  wireAuthForm();
+  const ok = await initAuth();
+  if (!ok) return; // stay on the gate until signed in
+  startApp();
+})();

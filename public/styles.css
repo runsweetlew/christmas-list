@@ -251,3 +251,48 @@ textarea{min-height:84px;resize:vertical;line-height:1.5}
 @keyframes spin{to{transform:rotate(360deg)}}
 .foot{text-align:center;padding:30px 20px 60px}
 .foot span{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- shared public list page ---- */
+.share-body { margin: 0; }
+.share-wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 64px; }
+.share-head { text-align: center; margin-bottom: 32px; }
+.share-emoji { font-size: 44px; }
+.share-head h1 { margin: 8px 0 4px; }
+.share-sub { color: #6b6256; }
+.share-grid { display: grid; gap: 16px; }
+.share-card { display: flex; gap: 16px; padding: 16px; border: 1px solid #e4ddcd; border-radius: 10px; background: #fff; }
+.share-card.is-claimed { opacity: 0.78; }
+.share-thumb { width: 96px; height: 96px; object-fit: contain; background: #fff; flex: 0 0 auto; }
+.share-info { flex: 1; min-width: 0; }
+.share-info h3 { margin: 0 0 4px; }
+.share-why { color: #6b6256; margin: 0 0 6px; font-size: 14px; }
+.share-price { font-weight: 600; margin: 0 0 6px; }
+.share-link { display: inline-block; margin-bottom: 8px; }
+.share-claims { font-size: 13px; color: #3f6b3f; margin: 6px 0; }
+.share-claim-btn { padding: 8px 14px; border-radius: 6px; border: 1px solid #b1472d; background: #b1472d; color: #fff; cursor: pointer; }
+.share-claim-btn:disabled { opacity: 0.6; cursor: default; }
+.share-loading { text-align: center; color: #6b6256; padding: 48px 0; }
+
+/* ---- auth gate ---- */
+.auth-gate { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #f3ecdd; z-index: 1000; }
+.auth-card { width: 360px; max-width: 92vw; background: #fff; border: 1px solid #e4ddcd; border-radius: 12px; padding: 28px; }
+.auth-title { margin: 0 0 4px; text-align: center; }
+.auth-tag { margin: 0 0 18px; text-align: center; color: #6b6256; }
+.auth-card label { display: block; margin-bottom: 12px; }
+.auth-card label span { display: block; font-size: 13px; color: #6b6256; margin-bottom: 4px; }
+.auth-card input { width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #cfc6b4; border-radius: 6px; }
+.auth-submit { width: 100%; padding: 11px; border: 0; border-radius: 6px; background: #2f5d3a; color: #fff; cursor: pointer; font-size: 15px; }
+.auth-toggle { text-align: center; margin: 14px 0 0; }
+.auth-err { background: #fbe9e6; color: #92311d; border-radius: 6px; padding: 9px 12px; margin-bottom: 12px; font-size: 14px; }
+.auth-alt { margin-top: 16px; text-align: center; }
+.auth-google { display: block; padding: 10px; border: 1px solid #cfc6b4; border-radius: 6px; text-decoration: none; color: #333; margin-bottom: 8px; }
+.logout-btn { background: transparent; border: 1px solid #cfc6b4; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+
+/* ---- owner share panel ---- */
+.share-panel { margin-top: 12px; padding: 14px; border: 1px solid #e4ddcd; border-radius: 8px; background: #faf6ec; }
+.share-url-row { display: flex; gap: 8px; margin: 8px 0; }
+.share-url-row input { flex: 1; padding: 8px; border: 1px solid #cfc6b4; border-radius: 6px; }
+.share-help { font-size: 14px; color: #6b6256; margin: 0 0 4px; }
+.share-surprise { display: block; font-size: 14px; margin: 10px 0; }
+.share-actions { display: flex; gap: 8px; }
+.claim-badge { display: inline-block; font-size: 12px; color: #3f6b3f; margin-left: 8px; }

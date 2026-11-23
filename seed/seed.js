@@ -86,4 +86,30 @@ function seedIfEmpty(db) {
   return true;
 }
 
-module.exports = { seedIfEmpty, DEFAULTS };
+// Seed the 7 demo personas into one user's account (the "Add sample people" button).
+function seedPersonasFor(db, userId) {
+  const catalog = loadCatalog();
+  const ts = nowIso();
+  const insR = db.prepare(`INSERT INTO recipients
+    (user_id, name, relationship, emoji, age, gender, keywords, wishlist, budget_min, budget_max, sort, created, updated)
+    VALUES (@user_id,@name,@relationship,@emoji,@age,@gender,@keywords,@wishlist,@budget_min,@budget_max,@sort,@created,@updated)`);
+  const insI = db.prepare(`INSERT INTO ideas
+    (recipient_id, title, descr, category, est_price, retailer, search_url, product_url, image, source, why, created, updated)
+    VALUES (@recipient_id,@title,@descr,@category,@est_price,@retailer,@search_url,@product_url,@image,'pool',@why,@created,@updated)`);
+  const tx = db.transaction(() => {
+    DEFAULTS.forEach((d, i) => {
+      const r = insR.run({ ...d, user_id: userId, sort: i, created: ts, updated: ts });
+      const rid = r.lastInsertRowid;
+      for (const it of itemsFor(d.key, catalog)) {
+        const url = it.url || amz(it.title);
+        insI.run({ recipient_id: rid, title: it.title, descr: it.descr, category: it.category,
+          est_price: it.price_cents, retailer: it.retailer, search_url: url, product_url: it.url || '',
+          image: it.image || '', why: it.why, created: ts, updated: ts });
+      }
+    });
+  });
+  tx();
+  return DEFAULTS.length;
+}
+
+module.exports = { seedIfEmpty, seedPersonasFor, DEFAULTS };
