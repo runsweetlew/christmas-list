@@ -12,6 +12,7 @@ const { makeSessions } = require('./auth/sessions');
 const { makeAuth } = require('./auth/middleware');
 const { mountAuth } = require('./auth/routes');
 const { matchCatalog } = require('./catalog_match');
+const { makeShare } = require('./share');
 
 const PORT = process.env.PORT || 3101;
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -27,6 +28,7 @@ const users = makeUsers(db);
 const sessions = makeSessions(db);
 sessions.purgeExpired();
 const { attachUser, requireUser } = makeAuth({ sessions, users, secret: SECRET });
+const share = makeShare(db);
 
 const app = express();
 app.use(express.json({ limit: '2mb' }));
@@ -95,7 +97,7 @@ const Q = {
 
 function recipientPayload(r) {
   const c = Q.counts.get(r.id) || {};
-  return { ...r, counts: {
+  return { ...r, shared: !!r.share_token, hideClaims: !!r.share_hide_claims, counts: {
     ideas: c.ideas || 0, active: c.active || 0, listed: c.listed || 0,
     purchased: c.purchased || 0, listed_total: c.listed_total || 0, spent: c.spent || 0
   } };
@@ -179,6 +181,40 @@ app.delete('/api/recipients/:id', (req, res) => {
   });
   tx();
   res.json({ ok: true });
+});
+
+// ---- share links (owner) ----
+function shareUrl(req, token) {
+  const origin = process.env.APP_ORIGIN || (req.protocol + '://' + req.get('host'));
+  return origin.replace(/\/$/, '') + '/share/' + token;
+}
+
+app.post('/api/recipients/:id/share', (req, res) => {
+  const r = Q.recipient.get(num(req.params.id), req.user.id);
+  if (!r) return res.status(404).json({ error: 'not found' });
+  const token = r.share_token || share.enable(r.id);
+  res.json({ url: shareUrl(req, token), token, hideClaims: !!r.share_hide_claims });
+});
+
+app.post('/api/recipients/:id/share/rotate', (req, res) => {
+  const r = Q.recipient.get(num(req.params.id), req.user.id);
+  if (!r) return res.status(404).json({ error: 'not found' });
+  const token = share.enable(r.id);
+  res.json({ url: shareUrl(req, token), token });
+});
+
+app.delete('/api/recipients/:id/share', (req, res) => {
+  const r = Q.recipient.get(num(req.params.id), req.user.id);
+  if (!r) return res.status(404).json({ error: 'not found' });
+  share.disable(r.id);
+  res.json({ ok: true });
+});
+
+app.put('/api/recipients/:id/share', (req, res) => {
+  const r = Q.recipient.get(num(req.params.id), req.user.id);
+  if (!r) return res.status(404).json({ error: 'not found' });
+  share.setHideClaims(r.id, !!(req.body && req.body.hideClaims));
+  res.json({ ok: true, hideClaims: !!(req.body && req.body.hideClaims) });
 });
 
 // ---- idea generation (shared) ----
