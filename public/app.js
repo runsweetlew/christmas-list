@@ -17,9 +17,14 @@ function imgHtml(image, title, imgClass, phClass) {
 }
 
 const api = {
-  async get(u) { const r = await fetch(u); if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.status); return r.json(); },
+  async get(u) {
+    const r = await fetch(u);
+    if (r.status === 401) { showAuthGate(); throw new Error('not signed in'); }
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.status); return r.json();
+  },
   async send(u, method, body) {
     const r = await fetch(u, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+    if (r.status === 401) { showAuthGate(); throw new Error('not signed in'); }
     if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.status);
     return r.json();
   },
@@ -34,6 +39,71 @@ function toast(msg, isErr) {
   const t = $('#toast');
   t.textContent = msg; t.hidden = false; t.classList.toggle('err', !!isErr);
   clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, 2600);
+}
+
+/* ---------------- auth gate ---------------- */
+const AUTH = { user: null };
+function showAuthGate() { const g = document.getElementById('auth-gate'); if (g) g.hidden = false; }
+function hideAuthGate() { const g = document.getElementById('auth-gate'); if (g) g.hidden = true; }
+
+async function initAuth() {
+  const cfg = await fetch('/api/auth/config').then((r) => r.json()).catch(() => ({ password: true }));
+  const me = await fetch('/api/auth/me').then((r) => r.json()).catch(() => ({ user: null }));
+  renderAuthAlt(cfg);
+  if (me.user) { AUTH.user = me.user; hideAuthGate(); return true; }
+  showAuthGate();
+  return false;
+}
+
+function renderAuthAlt(cfg) {
+  const alt = document.getElementById('auth-alt');
+  if (!alt) return;
+  let html = '';
+  if (cfg.google) html += `<a class="auth-google" href="/api/auth/google">Continue with Google</a>`;
+  if (cfg.magic) html += `<p class="auth-magic"><a href="#" id="auth-magic-link">Email me a sign-in link instead</a></p>`;
+  alt.innerHTML = html;
+  if (cfg.magic) document.getElementById('auth-magic-link').addEventListener('click', onMagic);
+}
+
+let AUTH_MODE = 'login';
+function wireAuthForm() {
+  const form = document.getElementById('auth-form');
+  if (!form) return;
+  const err = document.getElementById('auth-err');
+  const nameRow = document.getElementById('auth-name-row');
+  document.getElementById('auth-switch').addEventListener('click', (e) => {
+    e.preventDefault();
+    AUTH_MODE = AUTH_MODE === 'login' ? 'signup' : 'login';
+    nameRow.hidden = AUTH_MODE === 'login';
+    document.getElementById('auth-submit').textContent = AUTH_MODE === 'login' ? 'Sign in' : 'Create account';
+    document.getElementById('auth-switch').textContent = AUTH_MODE === 'login' ? 'New here? Create an account' : 'Have an account? Sign in';
+    document.getElementById('auth-password').autocomplete = AUTH_MODE === 'login' ? 'current-password' : 'new-password';
+  });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    err.hidden = true;
+    const body = JSON.stringify({
+      name: document.getElementById('auth-name').value,
+      email: document.getElementById('auth-email').value,
+      password: document.getElementById('auth-password').value
+    });
+    try {
+      const r = await fetch('/api/auth/' + (AUTH_MODE === 'login' ? 'login' : 'signup'),
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'could not sign in');
+      AUTH.user = d.user; hideAuthGate(); location.reload();
+    } catch (ex) { err.textContent = ex.message; err.hidden = false; }
+  });
+}
+
+async function onMagic(e) {
+  e.preventDefault();
+  const email = document.getElementById('auth-email').value.trim();
+  if (!email) { document.getElementById('auth-email').focus(); return; }
+  await fetch('/api/auth/magic/request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+  const err = document.getElementById('auth-err');
+  err.textContent = 'Check your email for a sign-in link.'; err.hidden = false;
 }
 
 /* ---------------- view switching ---------------- */
@@ -670,4 +740,18 @@ $('#modal-close').onclick = closeModal;
 $('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
 
 /* boot */
-loadList();
+function startApp() {
+  const lo = document.getElementById('logout-btn');
+  if (lo) lo.addEventListener('click', async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    location.reload();
+  });
+  loadList();
+}
+
+(async () => {
+  wireAuthForm();
+  const ok = await initAuth();
+  if (!ok) return; // stay on the gate until signed in
+  startApp();
+})();
