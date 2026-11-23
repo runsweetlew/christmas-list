@@ -273,8 +273,18 @@ textarea{min-height:84px;resize:vertical;line-height:1.5}
 .share-claim-btn:disabled { opacity: 0.6; cursor: default; }
 .share-loading { text-align: center; color: #6b6256; padding: 48px 0; }
 
+/* ---- emoji palette + gender select in the person editor ---- */
+.emoji-row { display: flex; flex-direction: column; gap: 8px; }
+.emoji-row #f-emoji { width: 72px; text-align: center; font-size: 22px; }
+.emoji-palette { display: flex; flex-wrap: wrap; gap: 4px; max-height: 132px; overflow-y: auto; padding: 6px; border: 1px solid #e4ddcd; border-radius: 8px; background: #faf6ec; }
+.emoji-opt { font-size: 20px; line-height: 1; padding: 5px 6px; border: 1px solid transparent; border-radius: 6px; background: transparent; cursor: pointer; }
+.emoji-opt:hover { background: #efe7d4; }
+.emoji-opt.sel { border-color: #2f5d3a; background: #e4efe4; }
+#f-gender { width: 100%; box-sizing: border-box; padding: 9px 10px; border: 1px solid #cfc6b4; border-radius: 6px; background: #fff; font: inherit; }
+
 /* ---- auth gate ---- */
 .auth-gate { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #f3ecdd; z-index: 1000; }
+.auth-gate[hidden] { display: none; } /* [hidden] alone loses to the .auth-gate display:flex rule above */
 .auth-card { width: 360px; max-width: 92vw; background: #fff; border: 1px solid #e4ddcd; border-radius: 12px; padding: 28px; }
 .auth-title { margin: 0 0 4px; text-align: center; }
 .auth-tag { margin: 0 0 18px; text-align: center; color: #6b6256; }

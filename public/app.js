@@ -167,15 +167,47 @@ $('#people-grid').addEventListener('click', (e) => {
 });
 
 /* ---------------- PERSON EDITOR ---------------- */
+// quick-pick emoji palette (people, relationships, festive, pets, interests);
+// the text box still accepts any custom emoji you type.
+const EMOJI_CHOICES = [
+  '🎁','🎅','🤶','🧑‍🎄','🎄','⭐','❤️','✨',
+  '👩','👨','🧑','👧','👦','👶','👵','👴','🧓','🧒',
+  '👪','💍','🧑‍🤝‍🧑','👰','🤵',
+  '🧑‍💼','🧑‍🍳','🧑‍🌾','🧑‍🔧','🧑‍⚕️','🧑‍🏫','🧑‍🎓','🧑‍🚀','🧑‍🎨','🧑‍🌾',
+  '🐕','🐈','🐾','🐶','🐱',
+  '⚽','🏈','⛳','🎣','🎸','🎧','📚','✈️','🚗','🚲','🍷','🍺','☕','🎮','📷','🏕️','🏃','💪','🌲','🔧','🎨','🧶','🍳','🪴'
+];
+const GENDER_CHOICES = [
+  { v: '', t: 'Any / not specified' },
+  { v: 'female', t: 'Female' },
+  { v: 'male', t: 'Male' },
+  { v: 'non-binary', t: 'Non-binary' },
+  { v: 'other', t: 'Other' }
+];
+function genderOptions(cur) {
+  cur = (cur || '').trim();
+  const known = GENDER_CHOICES.map((g) => g.v);
+  const extra = cur && !known.includes(cur.toLowerCase()) ? [{ v: cur, t: cur }] : [];
+  return [...GENDER_CHOICES, ...extra].map((g) =>
+    `<option value="${attr(g.v)}"${g.v.toLowerCase() === cur.toLowerCase() ? ' selected' : ''}>${esc(g.t)}</option>`
+  ).join('');
+}
 function personFormHtml(r) {
   r = r || { name: '', relationship: '', emoji: '🎁', age: '', gender: '', keywords: '', wishlist: '', budget_min: 2500, budget_max: 15000 };
   return `<h2>${r.id ? 'Edit ' + esc(r.name) : 'Add someone'}</h2>
     <div class="form-grid">
       <div><label>Name</label><input id="f-name" value="${attr(r.name)}" placeholder="Grandma"></div>
       <div><label>Relationship</label><input id="f-rel" value="${attr(r.relationship)}" placeholder="Mother-in-law"></div>
-      <div><label>Emoji</label><input id="f-emoji" value="${attr(r.emoji)}" maxlength="4" placeholder="🎁"></div>
+      <div class="full"><label>Emoji</label>
+        <div class="emoji-row">
+          <input id="f-emoji" value="${attr(r.emoji)}" maxlength="4" placeholder="🎁">
+          <div class="emoji-palette" id="emoji-palette">
+            ${EMOJI_CHOICES.map((e) => `<button type="button" class="emoji-opt${e === r.emoji ? ' sel' : ''}" data-emoji="${attr(e)}">${e}</button>`).join('')}
+          </div>
+        </div>
+      </div>
       <div><label>Age</label><input id="f-age" value="${attr(r.age)}" placeholder="60s"></div>
-      <div><label>Gender</label><input id="f-gender" value="${attr(r.gender)}" placeholder="any"></div>
+      <div><label>Gender</label><select id="f-gender">${genderOptions(r.gender)}</select></div>
       <div class="full"><label>Interests / keywords</label><input id="f-kw" value="${attr(r.keywords)}" placeholder="golf, grilling, whiskey, history"></div>
       <div class="full wish-field"><label>What they said they want (we go deep on this)</label>
         <textarea id="f-wish" placeholder="Their actual asks, hints, sizes, favorite brands, links they sent...">${esc(r.wishlist)}</textarea></div>
@@ -196,6 +228,13 @@ function personFormHtml(r) {
 function openPersonEditor(id) {
   const r = id ? STATE.recipients.find((x) => x.id === id) : null;
   openModal(personFormHtml(r));
+  const pal = $('#emoji-palette');
+  if (pal) pal.addEventListener('click', (e) => {
+    const b = e.target.closest('.emoji-opt'); if (!b) return;
+    $('#f-emoji').value = b.dataset.emoji;
+    pal.querySelectorAll('.emoji-opt').forEach((x) => x.classList.remove('sel'));
+    b.classList.add('sel');
+  });
   $('#f-save').onclick = async () => {
     const body = {
       name: $('#f-name').value, relationship: $('#f-rel').value, emoji: $('#f-emoji').value || '🎁',
@@ -238,6 +277,7 @@ async function openPerson(id) {
   const { recipient, ideas } = await api.get('/api/recipients/' + id);
   STATE.person = recipient; STATE.ideas = ideas;
   renderPerson(); showView('person');
+  autoFillIfThin(); // background: enrich a thin pool across all interests
 }
 function renderPerson() {
   const r = STATE.person, ideas = STATE.ideas;
@@ -432,12 +472,17 @@ async function openBattle(personId) {
   const pool = ideas.filter((i) => i.status === 'active');
   STATE.battle = { pool, count: 0, pair: null, history: [], last: null };
   if (pool.length < 2) {
+    wrap.innerHTML = `<div class="battle-empty"><h2>Building ${esc(recipient.name)}'s gift pool…</h2>
+      <p><span class="spinner"></span> Pulling in ideas across their interests, one moment.</p></div>`;
+    await autoFillIfThin(24, 4);
+    if (STATE.battle && STATE.battle.pool.length >= 2) { nextPair(); return; }
     wrap.innerHTML = `<div class="battle-empty"><h2>Not enough ideas yet</h2>
-      <p>${esc(recipient.name)} needs at least 2 active ideas. Generate some first.</p>
+      <p>${esc(recipient.name)} needs at least 2 active ideas. Open them and add interests or generate some.</p>
       <p style="margin-top:14px"><button class="btn primary" onclick="window._openPerson(${id})">Open ${esc(recipient.name)}</button></p></div>`;
     return;
   }
   nextPair();
+  if (pool.length < 24) autoFillIfThin(24, 3); // background top-up for thin pools
 }
 function pickPair(pool) {
   const leastBattled = [...pool].sort((a, b) => a.battles - b.battles);
@@ -553,6 +598,35 @@ function battleCard(i, side) {
 }
 // Pull fresh, on-taste ideas in the background and merge them into the running
 // battle pool, so the user never waits for generation. Silent on error.
+// When a person's pool is thin (e.g. a narrow-keyword profile that the fixed
+// catalog barely matched), pull in a fuller, diverse pool via AI generation.
+// Generated ideas come with real images, so this also fixes missing photos.
+async function autoFillIfThin(minActive = 24, rounds = 4) {
+  if (!STATE.person || STATE.refilling) return 0;
+  const activeCount = STATE.ideas.filter((i) => i.status === 'active').length;
+  if (activeCount >= minActive) return 0;
+  STATE.refilling = true;
+  const pid = STATE.person.id;
+  try {
+    const gs = $('#gen-status');
+    if (gs) gs.innerHTML = '<span class="spinner"></span> Building a fuller gift pool across all of ' + esc(STATE.person.name) + "'s interests...";
+    const before = new Set(STATE.ideas.map((x) => x.id));
+    const res = await api.post('/api/recipients/' + pid + '/generate', { rounds });
+    if (!STATE.person || STATE.person.id !== pid) return 0; // user moved on
+    STATE.ideas = res.ideas;
+    const fresh = res.ideas.filter((i) => i.status === 'active' && !before.has(i.id));
+    if (STATE.battle) {
+      const have = new Set(STATE.battle.pool.map((p) => p.id));
+      for (const it of res.ideas) if (it.status === 'active' && !have.has(it.id)) STATE.battle.pool.push(it);
+    }
+    if ($('#view-person') && $('#view-person').classList.contains('active')) renderPerson();
+    if (fresh.length) toast(`✨ Added ${fresh.length} ideas across your interests`);
+    else if (res.error) toast('Idea engine busy, try again in a moment', true);
+    return fresh.length;
+  } catch (e) { return 0; }
+  finally { STATE.refilling = false; }
+}
+
 async function scheduleRefill() {
   if (STATE.refilling || !STATE.person) return;
   STATE.refilling = true;

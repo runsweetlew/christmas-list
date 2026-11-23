@@ -91,6 +91,7 @@ function mountAuth(app, { db, users, sessions, secret }) {
       startSession(res, u.id);
       res.redirect('/');
     } catch (e) {
+      console.error('[google callback] failed:', e && e.message);
       res.status(500).send('Google sign-in failed.');
     }
   });

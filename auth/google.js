@@ -31,11 +31,11 @@ async function exchangeCode(code) {
   const tok = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body
   }).then((r) => r.json());
-  if (!tok.access_token) throw new Error('google token exchange failed');
+  if (!tok.access_token) throw new Error('token exchange failed: ' + JSON.stringify(tok));
   const info = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
     headers: { Authorization: 'Bearer ' + tok.access_token }
   }).then((r) => r.json());
-  if (!info.sub) throw new Error('google userinfo failed');
+  if (!info.sub) throw new Error('userinfo failed: ' + JSON.stringify(info));
   return { sub: info.sub, email: info.email, name: info.name || info.given_name || '' };
 }
 
