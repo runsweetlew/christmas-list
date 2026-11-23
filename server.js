@@ -31,6 +31,7 @@ const { attachUser, requireUser } = makeAuth({ sessions, users, secret: SECRET }
 const share = makeShare(db);
 
 const app = express();
+app.set('trust proxy', 1); // behind the Cloudflare tunnel; trust its forwarded client IP
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(PUBLIC_DIR, { maxAge: '5m' }));
 
@@ -103,11 +104,14 @@ const Qclaims = {
 
 const rl = new Map(); // ip -> [timestamps]
 function rateLimited(req, max = 30, windowMs = 60000) {
-  const ip = req.ip || 'x';
+  // prefer the real client IP forwarded by Cloudflare, else the connection IP
+  const ip = req.headers['cf-connecting-ip'] || req.ip || 'x';
   const now = Date.now();
   const arr = (rl.get(ip) || []).filter((t) => now - t < windowMs);
   arr.push(now);
   rl.set(ip, arr);
+  // evict idle buckets so the map cannot grow unbounded
+  if (rl.size > 5000) { for (const [k, v] of rl) { if (!v.length || now - v[v.length - 1] > windowMs) rl.delete(k); } }
   return arr.length > max;
 }
 
