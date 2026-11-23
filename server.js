@@ -604,6 +604,11 @@ app.get('/api/shopping-list', (req, res) => {
   res.json({ groups: out, grandListed, grandSpent });
 });
 
+app.get('/share/:token', (req, res) => {
+  res.set('X-Robots-Tag', 'noindex');
+  res.sendFile(path.join(PUBLIC_DIR, 'share.html'));
+});
+
 app.get('*', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'index.html')));
 
 app.listen(PORT, () => console.log(`🎄 christmas gift finder on :${PORT}`));
