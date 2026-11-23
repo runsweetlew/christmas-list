@@ -1,19 +1,46 @@
 'use strict';
 const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
 const express = require('express');
-const { db } = require('./db');
+const { db, DATA_DIR } = require('./db');
 const { seedIfEmpty } = require('./seed/seed');
 const { generateIdeas, amazonSearch } = require('./llm');
 const { resolveMany } = require('./bing_img');
+const { makeUsers } = require('./auth/users');
+const { makeSessions } = require('./auth/sessions');
+const { makeAuth } = require('./auth/middleware');
+const { mountAuth } = require('./auth/routes');
+const { matchCatalog } = require('./catalog_match');
 
 const PORT = process.env.PORT || 3101;
 const PUBLIC_DIR = path.join(__dirname, 'public');
 
+function getSessionSecret() {
+  if (process.env.SESSION_SECRET) return process.env.SESSION_SECRET;
+  const p = path.join(DATA_DIR, '.session-secret');
+  try { return fs.readFileSync(p, 'utf8'); }
+  catch (e) { const s = crypto.randomBytes(32).toString('hex'); fs.writeFileSync(p, s, { mode: 0o600 }); return s; }
+}
+const SECRET = getSessionSecret();
 seedIfEmpty(db);
+const users = makeUsers(db);
+const sessions = makeSessions(db);
+sessions.purgeExpired();
+const { attachUser, requireUser } = makeAuth({ sessions, users, secret: SECRET });
 
 const app = express();
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(PUBLIC_DIR, { maxAge: '5m' }));
+
+app.use(attachUser);
+mountAuth(app, { db, users, sessions, secret: SECRET });
+app.get('/api/health', (req, res) => res.json({ ok: true })); // keep health public (move from bottom)
+// everything below /api (except /api/auth and /api/share) requires a signed-in user:
+app.use('/api', (req, res, next) => {
+  if (req.path.startsWith('/auth') || req.path.startsWith('/share') || req.path === '/health') return next();
+  return requireUser(req, res, next);
+});
 
 const nowIso = () => new Date().toISOString();
 const num = (v, d) => { const n = parseInt(v, 10); return isNaN(n) ? d : n; };
@@ -21,11 +48,11 @@ const str = (v, n) => String(v == null ? '' : v).slice(0, n);
 
 // ---- prepared statements ----
 const Q = {
-  recipients: db.prepare('SELECT * FROM recipients ORDER BY sort, id'),
-  recipient: db.prepare('SELECT * FROM recipients WHERE id = ?'),
+  recipients: db.prepare('SELECT * FROM recipients WHERE user_id = ? ORDER BY sort, id'),
+  recipient: db.prepare('SELECT * FROM recipients WHERE id = ? AND user_id = ?'),
   insRecipient: db.prepare(`INSERT INTO recipients
-    (name, relationship, emoji, age, gender, keywords, wishlist, feedback, budget_min, budget_max, sort, created, updated)
-    VALUES (@name,@relationship,@emoji,@age,@gender,@keywords,@wishlist,@feedback,@budget_min,@budget_max,@sort,@created,@updated)`),
+    (user_id, name, relationship, emoji, age, gender, keywords, wishlist, feedback, budget_min, budget_max, sort, created, updated)
+    VALUES (@user_id,@name,@relationship,@emoji,@age,@gender,@keywords,@wishlist,@feedback,@budget_min,@budget_max,@sort,@created,@updated)`),
   updRecipient: db.prepare(`UPDATE recipients SET
     name=@name, relationship=@relationship, emoji=@emoji, age=@age, gender=@gender,
     keywords=@keywords, wishlist=@wishlist, feedback=@feedback, budget_min=@budget_min, budget_max=@budget_max, updated=@updated
@@ -75,14 +102,20 @@ function recipientPayload(r) {
   } };
 }
 
+// Return the idea only if it belongs to one of this user's recipients.
+const ideaOwnedBy = db.prepare(`SELECT ideas.* FROM ideas
+  JOIN recipients ON recipients.id = ideas.recipient_id
+  WHERE ideas.id = ? AND recipients.user_id = ?`);
+function ownedIdea(ideaId, userId) { return ideaOwnedBy.get(ideaId, userId); }
+
 // ---- recipients ----
 app.get('/api/state', (req, res) => {
-  const recipients = Q.recipients.all().map(recipientPayload);
+  const recipients = Q.recipients.all(req.user.id).map(recipientPayload);
   res.json({ recipients });
 });
 
 app.get('/api/recipients/:id', (req, res) => {
-  const r = Q.recipient.get(num(req.params.id));
+  const r = Q.recipient.get(num(req.params.id), req.user.id);
   if (!r) return res.status(404).json({ error: 'not found' });
   const ideas = Q.ideasFor.all(r.id);
   res.json({ recipient: recipientPayload(r), ideas });
@@ -103,16 +136,18 @@ function cleanRecipient(body) {
   };
 }
 
-app.post('/api/recipients', (req, res) => {
+app.post('/api/recipients', async (req, res) => {
   const c = cleanRecipient(req.body || {});
   const ts = nowIso();
-  const maxSort = db.prepare('SELECT COALESCE(MAX(sort),0)+1 AS s FROM recipients').get().s;
-  const r = Q.insRecipient.run({ ...c, sort: maxSort, created: ts, updated: ts });
-  res.json({ recipient: recipientPayload(Q.recipient.get(r.lastInsertRowid)) });
+  const maxSort = db.prepare('SELECT COALESCE(MAX(sort),0)+1 AS s FROM recipients WHERE user_id = ?').get(req.user.id).s;
+  const ins = Q.insRecipient.run({ ...c, user_id: req.user.id, sort: maxSort, created: ts, updated: ts });
+  const r = Q.recipient.get(ins.lastInsertRowid, req.user.id);
+  await populatePool(r); // Task 11
+  res.json({ recipient: recipientPayload(r) });
 });
 
 app.put('/api/recipients/:id', (req, res) => {
-  const r = Q.recipient.get(num(req.params.id));
+  const r = Q.recipient.get(num(req.params.id), req.user.id);
   if (!r) return res.status(404).json({ error: 'not found' });
   const c = cleanRecipient(req.body || {});
   // preserve accumulated feedback unless explicitly provided
@@ -129,6 +164,8 @@ app.put('/api/recipients/:id', (req, res) => {
 
 app.delete('/api/recipients/:id', (req, res) => {
   const id = num(req.params.id);
+  const owned = Q.recipient.get(id, req.user.id);
+  if (!owned) return res.status(404).json({ error: 'not found' });
   const tx = db.transaction(() => {
     Q.delRecipientPrices.run(id);
     Q.delRecipientIdeas.run(id);
@@ -185,7 +222,7 @@ async function runGeneration(r, rounds, liked) {
 }
 
 app.post('/api/recipients/:id/generate', async (req, res) => {
-  const r = Q.recipient.get(num(req.params.id));
+  const r = Q.recipient.get(num(req.params.id), req.user.id);
   if (!r) return res.status(404).json({ error: 'not found' });
   const rounds = num(req.body && req.body.rounds, 1);
   const out = await runGeneration(r, rounds);
@@ -196,11 +233,11 @@ const countActive = (id) => Q.ideasFor.all(id).filter((i) => i.status === 'activ
 
 // Generate (in bounded batches) until the recipient has at least `target` active
 // ideas. `liked` keeps new ideas on-taste. Stops on no-progress or a guard cap.
-async function generateUpTo(recipientId, target, liked) {
+async function generateUpTo(recipientId, target, liked, userId) {
   let active = countActive(recipientId), added = 0, provider = 'none', lastError = null, guard = 0;
   while (active < target && guard < 6) {
     const rounds = Math.min(3, Math.max(1, Math.ceil((target - active) / 9)));
-    const out = await runGeneration(Q.recipient.get(recipientId), rounds, liked);
+    const out = await runGeneration(Q.recipient.get(recipientId, userId), rounds, liked);
     added += out.added; if (out.provider !== 'none') provider = out.provider; if (out.error) lastError = out.error;
     const na = countActive(recipientId);
     if (na <= active) break; // engine dry or rate-limited, stop rather than loop
@@ -212,7 +249,7 @@ async function generateUpTo(recipientId, target, liked) {
 // ---- refine: keep the top 50% by Elo, retire the bottom 50%, breed fresh ideas
 //      from the winners, and never leave fewer than 80 active ideas ----
 app.post('/api/recipients/:id/refine', async (req, res) => {
-  const r = Q.recipient.get(num(req.params.id));
+  const r = Q.recipient.get(num(req.params.id), req.user.id);
   if (!r) return res.status(404).json({ error: 'not found' });
   const active = Q.ideasFor.all(r.id).filter((i) => i.status === 'active'); // ordered by rating desc
   if (active.length < 4) return res.status(400).json({ error: 'not enough ideas to refine yet, battle a few first' });
@@ -227,9 +264,9 @@ app.post('/api/recipients/:id/refine', async (req, res) => {
   const liked = keep.map((i) => i.title + (i.category ? ' (' + i.category + ')' : ''));
   // replace the retired half, floored at 80 and capped so it stays reasonably fast
   const target = Math.max(80, Math.min(active.length, keepN + 40));
-  const out = await generateUpTo(r.id, target, liked);
+  const out = await generateUpTo(r.id, target, liked, req.user.id);
   res.json({ kept: keep.length, retired: retire.length, finalActive: countActive(r.id), added: out.added,
-    provider: out.provider, error: out.error, recipient: recipientPayload(Q.recipient.get(r.id)), ideas: Q.ideasFor.all(r.id) });
+    provider: out.provider, error: out.error, recipient: recipientPayload(Q.recipient.get(r.id, req.user.id)), ideas: Q.ideasFor.all(r.id) });
 });
 
 // Pull "avoid" terms out of free-text steering ("no coffee", "less kitchen stuff").
@@ -265,7 +302,7 @@ function purgeAvoid(recipientId, text) {
 
 // ---- head-to-head feedback: steer the profile, pull in fresh matching ideas ----
 app.post('/api/recipients/:id/feedback', async (req, res) => {
-  const r = Q.recipient.get(num(req.params.id));
+  const r = Q.recipient.get(num(req.params.id), req.user.id);
   if (!r) return res.status(404).json({ error: 'not found' });
   const text = str(req.body && req.body.text, 600).trim();
   if (!text) return res.status(400).json({ error: 'feedback text required' });
@@ -275,12 +312,12 @@ app.post('/api/recipients/:id/feedback', async (req, res) => {
   // remove existing ideas that match what the shopper just said to avoid. This is
   // instant (no AI); fresh on-taste ideas are pulled in afterward in the background.
   const { purged, terms } = purgeAvoid(r.id, text);
-  res.json({ purged, avoided: terms, recipient: recipientPayload(Q.recipient.get(r.id)), ideas: Q.ideasFor.all(r.id) });
+  res.json({ purged, avoided: terms, recipient: recipientPayload(Q.recipient.get(r.id, req.user.id)), ideas: Q.ideasFor.all(r.id) });
 });
 
 // custom manual idea
 app.post('/api/recipients/:id/ideas', (req, res) => {
-  const r = Q.recipient.get(num(req.params.id));
+  const r = Q.recipient.get(num(req.params.id), req.user.id);
   if (!r) return res.status(404).json({ error: 'not found' });
   const b = req.body || {};
   const ts = nowIso();
@@ -309,7 +346,7 @@ app.post('/api/battle', (req, res) => {
   const ts = nowIso();
   // "neither": both options rejected, both lose rating (penalized vs an implied better gift)
   if (b.neither) {
-    const a = Q.idea.get(num(b.aId)), c = Q.idea.get(num(b.bId));
+    const a = ownedIdea(num(b.aId), req.user.id), c = ownedIdea(num(b.bId), req.user.id);
     if (!a || !c) return res.status(400).json({ error: 'bad ids' });
     const PEN = 28;
     const na = a.rating - PEN, nc = c.rating - PEN;
@@ -317,8 +354,8 @@ app.post('/api/battle', (req, res) => {
     Q.updRating.run({ id: c.id, rating: nc, updated: ts });
     return res.json({ ok: true, neither: true, a: { id: a.id, rating: na }, b: { id: c.id, rating: nc } });
   }
-  const w = Q.idea.get(num(b.winnerId));
-  const l = Q.idea.get(num(b.loserId));
+  const w = ownedIdea(num(b.winnerId), req.user.id);
+  const l = ownedIdea(num(b.loserId), req.user.id);
   if (!w || !l) return res.status(400).json({ error: 'bad ids' });
   const [nw, nl] = elo(w.rating, l.rating, true);
   Q.updRating.run({ id: w.id, rating: nw, updated: ts });
@@ -335,6 +372,7 @@ app.post('/api/battle/undo', (req, res) => {
     for (const it of items) {
       const id = num(it.id);
       if (!id) continue;
+      if (!ownedIdea(id, req.user.id)) continue;
       Q.setRatingExact.run({ id, rating: Number(it.rating) || 1500, battles: Math.max(0, num(it.battles, 0)), updated: ts });
     }
   });
@@ -344,7 +382,7 @@ app.post('/api/battle/undo', (req, res) => {
 
 // ---- status changes: favorite / hide / purchase / unlist ----
 app.post('/api/ideas/:id/status', (req, res) => {
-  const it = Q.idea.get(num(req.params.id));
+  const it = ownedIdea(num(req.params.id), req.user.id);
   if (!it) return res.status(404).json({ error: 'not found' });
   const b = req.body || {};
   const status = str(b.status, 20);
@@ -375,7 +413,7 @@ app.post('/api/ideas/:id/status', (req, res) => {
 
 // update idea fields (url, target, notes, est_price)
 app.put('/api/ideas/:id', (req, res) => {
-  const it = Q.idea.get(num(req.params.id));
+  const it = ownedIdea(num(req.params.id), req.user.id);
   if (!it) return res.status(404).json({ error: 'not found' });
   const b = req.body || {};
   const ts = nowIso();
@@ -394,6 +432,7 @@ app.put('/api/ideas/:id', (req, res) => {
 
 app.delete('/api/ideas/:id', (req, res) => {
   const id = num(req.params.id);
+  if (!ownedIdea(id, req.user.id)) return res.status(404).json({ error: 'not found' });
   const tx = db.transaction(() => { Q.delIdeaPrices.run(id); Q.delIdea.run(id); });
   tx();
   res.json({ ok: true });
@@ -401,14 +440,14 @@ app.delete('/api/ideas/:id', (req, res) => {
 
 // ---- price watch ----
 app.get('/api/ideas/:id/prices', (req, res) => {
-  const it = Q.idea.get(num(req.params.id));
+  const it = ownedIdea(num(req.params.id), req.user.id);
   if (!it) return res.status(404).json({ error: 'not found' });
   res.json({ idea: it, prices: Q.prices.all(it.id) });
 });
 
 // manually log a price point
 app.post('/api/ideas/:id/price', (req, res) => {
-  const it = Q.idea.get(num(req.params.id));
+  const it = ownedIdea(num(req.params.id), req.user.id);
   if (!it) return res.status(404).json({ error: 'not found' });
   const price = Math.max(0, num(req.body && req.body.price, 0));
   if (!price) return res.status(400).json({ error: 'price required (cents)' });
@@ -420,7 +459,7 @@ app.post('/api/ideas/:id/price', (req, res) => {
 
 // ---- shopping list ----
 app.get('/api/shopping-list', (req, res) => {
-  const recipients = Q.recipients.all();
+  const recipients = Q.recipients.all(req.user.id);
   const out = [];
   let grandListed = 0, grandSpent = 0;
   for (const r of recipients) {
@@ -435,8 +474,6 @@ app.get('/api/shopping-list', (req, res) => {
   }
   res.json({ groups: out, grandListed, grandSpent });
 });
-
-app.get('/api/health', (req, res) => res.json({ ok: true }));
 
 app.get('*', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'index.html')));
 
