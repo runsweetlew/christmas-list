@@ -4,7 +4,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const express = require('express');
 const { db, DATA_DIR } = require('./db');
-const { seedIfEmpty } = require('./seed/seed');
+const { seedPersonasFor } = require('./seed/seed');
 const { generateIdeas, amazonSearch } = require('./llm');
 const { resolveMany } = require('./bing_img');
 const { makeUsers } = require('./auth/users');
@@ -23,7 +23,6 @@ function getSessionSecret() {
   catch (e) { const s = crypto.randomBytes(32).toString('hex'); fs.writeFileSync(p, s, { mode: 0o600 }); return s; }
 }
 const SECRET = getSessionSecret();
-seedIfEmpty(db);
 const users = makeUsers(db);
 const sessions = makeSessions(db);
 sessions.purgeExpired();
@@ -146,6 +145,13 @@ app.post('/api/recipients', async (req, res) => {
   res.json({ recipient: recipientPayload(r) });
 });
 
+app.post('/api/sample-people', async (req, res) => {
+  const existing = Q.recipients.all(req.user.id).length;
+  if (existing > 0) return res.status(400).json({ error: 'you already have people added' });
+  const n = seedPersonasFor(db, req.user.id);
+  res.json({ added: n, recipients: Q.recipients.all(req.user.id).map(recipientPayload) });
+});
+
 app.put('/api/recipients/:id', (req, res) => {
   const r = Q.recipient.get(num(req.params.id), req.user.id);
   if (!r) return res.status(404).json({ error: 'not found' });
@@ -219,6 +225,28 @@ async function runGeneration(r, rounds, liked) {
   });
   insertTx();
   return { added, provider, error: added ? null : lastError };
+}
+
+const catalog = (() => { try { return require('./seed/catalog.json'); } catch (e) { return []; } })();
+
+// Fill a brand-new recipient's head-to-head pool from the shared catalog so it is
+// not empty before the user runs AI generation.
+async function populatePool(r) {
+  if (!catalog.length) return 0;
+  const matches = matchCatalog(r, catalog, 80);
+  const ts = nowIso();
+  const tx = db.transaction(() => {
+    for (const it of matches) {
+      Q.insIdea.run({
+        recipient_id: r.id, title: it.title, descr: it.descr || '', category: it.category || '',
+        est_price: it.price_cents || 0, retailer: it.retailer || 'Amazon',
+        search_url: it.url || amazonSearch(it.title), product_url: it.url || '',
+        image: it.image || '', source: 'pool', why: it.why || '', created: ts, updated: ts
+      });
+    }
+  });
+  tx();
+  return matches.length;
 }
 
 app.post('/api/recipients/:id/generate', async (req, res) => {
