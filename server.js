@@ -336,12 +336,49 @@ const catalog = (() => { try { return require('./seed/catalog.json'); } catch (e
 
 // Fill a brand-new recipient's head-to-head pool from the shared catalog so it is
 // not empty before the user runs AI generation.
+// Build a head-to-head pool of at least TARGET items that ALL have a real photo:
+// lead with interest-matched photographed items, then fill with photographed,
+// gender/budget-appropriate catalog items so there's plenty to consider.
+const POOL_TARGET = 110;
+function selectPool(r, cat, target = POOL_TARGET) {
+  const g = (r.gender || '').toLowerCase();
+  const wantF = /^f|female|woman|women/.test(g);
+  const wantM = /^m|male|man|men/.test(g);
+  const hay = ((r.relationship || '') + ' ' + (r.keywords || '') + ' ' + (r.name || '')).toLowerCase();
+  const dog = /\bdogs?\b|\bpuppy\b/.test(hay);
+  const ceiling = (Number(r.budget_max) || 20000) * 1.4;
+  const okTag = (i) => {
+    const t = i.tags || [];
+    if (dog) return t.includes('dogs');
+    if (t.includes('dogs')) return false;
+    const neutral = t.includes('unisex') || t.includes('anyone');
+    if (wantM && t.includes('women') && !t.includes('men') && !neutral) return false;
+    if (wantF && t.includes('men') && !t.includes('women') && !neutral) return false;
+    return true;
+  };
+  const okBudget = (i) => !i.price_cents || i.price_cents <= ceiling;
+  const seen = new Set();
+  const chosen = [];
+  const add = (it) => { const k = it.title.toLowerCase(); if (seen.has(k)) return; seen.add(k); chosen.push(it); };
+  // 1) interest matches that have a photo
+  const matched = matchCatalog(r, cat, 400);
+  for (const it of matched) { if (chosen.length >= target) break; if (it.image && okTag(it) && okBudget(it)) add(it); }
+  // 2) fill with photographed, appropriate items (broadly-giftable first)
+  const photographed = cat.filter((i) => i.image && okTag(i) && okBudget(i));
+  const fill = photographed.filter((i) => (i.tags || []).includes('anyone'))
+    .concat(photographed.filter((i) => !(i.tags || []).includes('anyone')));
+  for (const it of fill) { if (chosen.length >= target) break; add(it); }
+  // 3) last resort if the catalog is tiny: interest matches without a photo
+  for (const it of matched) { if (chosen.length >= target) break; if (okTag(it) && okBudget(it)) add(it); }
+  return chosen;
+}
+
 async function populatePool(r) {
   if (!catalog.length) return 0;
-  const matches = matchCatalog(r, catalog, 80);
+  const picks = selectPool(r, catalog);
   const ts = nowIso();
   const tx = db.transaction(() => {
-    for (const it of matches) {
+    for (const it of picks) {
       Q.insIdea.run({
         recipient_id: r.id, title: it.title, descr: it.descr || '', category: it.category || '',
         est_price: it.price_cents || 0, retailer: it.retailer || 'Amazon',
@@ -351,7 +388,7 @@ async function populatePool(r) {
     }
   });
   tx();
-  return matches.length;
+  return picks.length;
 }
 
 app.post('/api/recipients/:id/generate', async (req, res) => {
