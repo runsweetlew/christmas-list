@@ -95,6 +95,22 @@ const Q = {
     FROM ideas WHERE recipient_id = ?`)
 };
 
+const Qclaims = {
+  forIdea: db.prepare('SELECT id, claimer_name, note, created FROM claims WHERE idea_id = ? ORDER BY created'),
+  ins: db.prepare('INSERT INTO claims (idea_id, claimer_name, note, created) VALUES (?,?,?,?)'),
+  del: db.prepare('DELETE FROM claims WHERE idea_id = ? AND claimer_name = ?')
+};
+
+const rl = new Map(); // ip -> [timestamps]
+function rateLimited(req, max = 30, windowMs = 60000) {
+  const ip = req.ip || 'x';
+  const now = Date.now();
+  const arr = (rl.get(ip) || []).filter((t) => now - t < windowMs);
+  arr.push(now);
+  rl.set(ip, arr);
+  return arr.length > max;
+}
+
 function recipientPayload(r) {
   const c = Q.counts.get(r.id) || {};
   return { ...r, shared: !!r.share_token, hideClaims: !!r.share_hide_claims, counts: {
@@ -118,7 +134,10 @@ app.get('/api/state', (req, res) => {
 app.get('/api/recipients/:id', (req, res) => {
   const r = Q.recipient.get(num(req.params.id), req.user.id);
   if (!r) return res.status(404).json({ error: 'not found' });
-  const ideas = Q.ideasFor.all(r.id);
+  const showClaims = !r.share_hide_claims;
+  const ideas = Q.ideasFor.all(r.id).map((i) => showClaims
+    ? { ...i, claims: Qclaims.forIdea.all(i.id) }
+    : i);
   res.json({ recipient: recipientPayload(r), ideas });
 });
 
@@ -215,6 +234,52 @@ app.put('/api/recipients/:id/share', (req, res) => {
   if (!r) return res.status(404).json({ error: 'not found' });
   share.setHideClaims(r.id, !!(req.body && req.body.hideClaims));
   res.json({ ok: true, hideClaims: !!(req.body && req.body.hideClaims) });
+});
+
+// ---- public shared list + claims (no auth) ----
+app.get('/api/share/:token', (req, res) => {
+  res.set('X-Robots-Tag', 'noindex');
+  const r = share.byToken(req.params.token);
+  if (!r) return res.status(404).json({ error: 'not found' });
+  const items = Q.ideasFor.all(r.id)
+    .filter((i) => i.status === 'listed' || i.status === 'purchased')
+    .map((i) => ({
+      id: i.id, title: i.title, why: i.why, category: i.category, image: i.image,
+      est_price: i.est_price, last_price: i.last_price, target_price: i.target_price,
+      product_url: i.product_url, search_url: i.search_url, status: i.status,
+      claims: Qclaims.forIdea.all(i.id)
+    }));
+  res.json({
+    recipient: { name: r.name, emoji: r.emoji, relationship: r.relationship },
+    items
+  });
+});
+
+app.post('/api/share/:token/claim', (req, res) => {
+  if (rateLimited(req)) return res.status(429).json({ error: 'slow down' });
+  const r = share.byToken(req.params.token);
+  if (!r) return res.status(404).json({ error: 'not found' });
+  const b = req.body || {};
+  const ideaId = num(b.ideaId);
+  const name = str(b.name, 60).trim();
+  if (!name) return res.status(400).json({ error: 'your name is required' });
+  const it = Q.idea.get(ideaId);
+  if (!it || it.recipient_id !== r.id) return res.status(400).json({ error: 'bad item' });
+  Qclaims.ins.run(ideaId, name, str(b.note, 200), nowIso());
+  res.json({ ok: true, claims: Qclaims.forIdea.all(ideaId) });
+});
+
+app.post('/api/share/:token/unclaim', (req, res) => {
+  if (rateLimited(req)) return res.status(429).json({ error: 'slow down' });
+  const r = share.byToken(req.params.token);
+  if (!r) return res.status(404).json({ error: 'not found' });
+  const b = req.body || {};
+  const ideaId = num(b.ideaId);
+  const name = str(b.name, 60).trim();
+  const it = Q.idea.get(ideaId);
+  if (!it || it.recipient_id !== r.id) return res.status(400).json({ error: 'bad item' });
+  Qclaims.del.run(ideaId, name);
+  res.json({ ok: true, claims: Qclaims.forIdea.all(ideaId) });
 });
 
 // ---- idea generation (shared) ----
