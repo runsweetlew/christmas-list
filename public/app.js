@@ -258,7 +258,9 @@ function renderPerson() {
         <button class="btn gold" id="p-generate">Generate more ideas</button>
         <button class="btn ghost" id="p-edit">Edit person</button>
         <button class="btn ghost" id="p-add">Add idea manually</button>
+        <button class="btn ghost share-toggle-btn" id="share-btn" data-id="${r.id}">${r.shared ? '🔗 Manage share link' : '🔗 Share this list'}</button>
       </div>
+      <div id="share-panel" class="share-panel" hidden></div>
       <div id="gen-status" class="gen-note" style="margin-top:10px"></div>
     </div>
     ${listed.length ? sectionHtml('★ On the shopping list', listed) : ''}
@@ -271,6 +273,46 @@ function renderPerson() {
   $('#p-battle').onclick = () => { openBattle(r.id); showView('battle'); };
   $('#p-edit').onclick = () => openPersonEditor(r.id);
   $('#p-add').onclick = () => openIdeaEditor(r.id);
+  $('#share-btn').onclick = () => openSharePanel(STATE.person);
+}
+
+async function openSharePanel(recipient) {
+  const panel = $('#share-panel');
+  if (!panel) return;
+  let d;
+  try { d = await api.post('/api/recipients/' + recipient.id + '/share'); }
+  catch (e) { toast('Could not create share link: ' + e.message, true); return; }
+  panel.hidden = false;
+  panel.innerHTML = `
+    <p class="share-help">Anyone with this link can view ${esc(recipient.name)}'s list and claim items. It is unlisted.</p>
+    <div class="share-url-row">
+      <input id="share-url" readonly value="${attr(d.url)}" />
+      <button class="btn ghost sm" id="share-copy">Copy</button>
+    </div>
+    <label class="share-surprise"><input type="checkbox" id="share-hide" ${d.hideClaims ? 'checked' : ''}/> Surprise mode (hide who claimed what from me)</label>
+    <div class="share-actions">
+      <button class="btn ghost sm" id="share-rotate">Reset link</button>
+      <button class="btn ghost sm" id="share-disable">Stop sharing</button>
+    </div>`;
+  $('#share-copy').onclick = () => {
+    const el = $('#share-url'); el.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(el.value);
+    toast('Link copied');
+  };
+  $('#share-hide').onchange = async (e) => {
+    try { await api.put('/api/recipients/' + recipient.id + '/share', { hideClaims: e.target.checked }); toast('Updated'); }
+    catch (err) { toast('Could not update: ' + err.message, true); }
+  };
+  $('#share-rotate').onclick = async () => {
+    try {
+      const r2 = await api.post('/api/recipients/' + recipient.id + '/share/rotate');
+      $('#share-url').value = r2.url; toast('New link created; the old one no longer works');
+    } catch (err) { toast('Could not reset: ' + err.message, true); }
+  };
+  $('#share-disable').onclick = async () => {
+    try { await api.del('/api/recipients/' + recipient.id + '/share'); panel.hidden = true; toast('Sharing stopped'); }
+    catch (err) { toast('Could not stop sharing: ' + err.message, true); }
+  };
 }
 function sectionHtml(title, items) {
   return `<div class="ideas-head"><h3>${title} (${items.length})</h3></div><div class="idea-grid">${items.map(ideaCard).join('')}</div>`;
@@ -279,6 +321,8 @@ function ideaCard(i) {
   const price = i.last_price || i.est_price;
   const pill = i.status === 'listed' ? '<span class="status-pill listed">★ Listed</span>'
     : i.status === 'purchased' ? '<span class="status-pill purchased">✓ Bought</span>' : '';
+  const claimBadge = (i.claims && i.claims.length)
+    ? `<span class="claim-badge">Claimed by ${esc(i.claims.map((c) => c.claimer_name).join(', '))}</span>` : '';
   let actions;
   if (i.status === 'active') {
     actions = `<a class="btn ghost sm" href="${attr(link(i))}" target="_blank" rel="noopener">View</a>
@@ -296,7 +340,7 @@ function ideaCard(i) {
     ${pill}
     <div class="thumb">${imgHtml(i.image, i.title, 'ti', 'ph')}</div>
     <div class="body">
-      <div class="cat">${esc(i.category || i.retailer || 'Gift')}</div>
+      <div class="cat">${esc(i.category || i.retailer || 'Gift')}${claimBadge}</div>
       <h4>${esc(i.title)}</h4>
       <div class="descr">${esc(i.descr)}</div>
       ${i.why ? `<div class="why">${esc(i.why)}</div>` : ''}

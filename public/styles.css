@@ -287,3 +287,12 @@ textarea{min-height:84px;resize:vertical;line-height:1.5}
 .auth-alt { margin-top: 16px; text-align: center; }
 .auth-google { display: block; padding: 10px; border: 1px solid #cfc6b4; border-radius: 6px; text-decoration: none; color: #333; margin-bottom: 8px; }
 .logout-btn { background: transparent; border: 1px solid #cfc6b4; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+
+/* ---- owner share panel ---- */
+.share-panel { margin-top: 12px; padding: 14px; border: 1px solid #e4ddcd; border-radius: 8px; background: #faf6ec; }
+.share-url-row { display: flex; gap: 8px; margin: 8px 0; }
+.share-url-row input { flex: 1; padding: 8px; border: 1px solid #cfc6b4; border-radius: 6px; }
+.share-help { font-size: 14px; color: #6b6256; margin: 0 0 4px; }
+.share-surprise { display: block; font-size: 14px; margin: 10px 0; }
+.share-actions { display: flex; gap: 8px; }
+.claim-badge { display: inline-block; font-size: 12px; color: #3f6b3f; margin-left: 8px; }
