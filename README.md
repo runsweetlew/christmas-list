@@ -68,9 +68,33 @@ npm install
 npm start
 ```
 
-The app works out of the box with the baked product catalog. To enable the AI
-Generate / Steer / Refine features, copy `.llm-env.example` to `.llm-env` and add your
-keys (the compose file loads it automatically).
+The app works out of the box with the baked product catalog and email+password
+accounts — **no API keys required**. Every integration below is optional and only
+lights up when you supply **your own** key.
+
+## Configuration & API keys (bring your own)
+
+All secrets live in two gitignored files you create from the provided examples.
+**Nobody else's keys ship in this repo — each deployment must supply its own**, so
+your account's quota/billing is never used by someone running their own copy.
+
+1. **`.env`** — copy from `.env.example`, then fill in any you want:
+
+   | Key | Enables | Where to get it |
+   |-----|---------|-----------------|
+   | `SESSION_SECRET` | Signs session cookies (auto-generated if blank) | — |
+   | `APP_ORIGIN` | Share links + OAuth/magic-link URLs. Use `http://localhost:3101` for local | your deployment's URL |
+   | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | "Continue with Google" sign-in | Your own OAuth 2.0 **Web** client at [Google Cloud Console](https://console.cloud.google.com) → Credentials. Redirect URI = `<APP_ORIGIN>/api/auth/google/callback` |
+   | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `SMTP_FROM` | Magic-link email sign-in | Your own SMTP creds (e.g. a Gmail App Password) |
+   | `SERPAPI_KEY` | Live, accurately-photographed/priced gift results for niche interests | Your own free key (250 searches/mo) at [serpapi.com](https://serpapi.com/manage-api-key) |
+
+2. **`.llm-env`** — copy from `.llm-env.example`. Enables the AI **Generate / Steer /
+   Refine** idea features. Needs your own [Groq](https://console.groq.com) key
+   (primary) and optionally a [Google AI Studio / Gemini](https://aistudio.google.com)
+   key (fallback).
+
+`docker compose` loads both files automatically. Leave any key blank and that
+feature simply stays hidden/falls back to the catalog — nothing breaks.
 
 ## How the data is built
 
