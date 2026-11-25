@@ -402,7 +402,10 @@ $('#person-detail').addEventListener('click', async (e) => {
     } else {
       await api.post(`/api/ideas/${id}/status`, { status: act === 'list' ? 'listed' : act === 'hide' ? 'hidden' : 'active' });
     }
-    await openPerson(STATE.person.id); toast('Updated');
+    const y = window.scrollY;
+    await openPerson(STATE.person.id);
+    window.scrollTo(0, y); // stay where the user was, don't jump to the top
+    toast('Updated');
   } catch (err) { toast('Error: ' + err.message, true); }
 });
 
@@ -817,7 +820,10 @@ async function shopAction(e) {
     } else if (act === 'unbuy') await api.post(`/api/ideas/${id}/status`, { status: 'listed' });
     else if (act === 'unstar') { if (!confirm('Remove from the shopping list?')) return; await api.post(`/api/ideas/${id}/status`, { status: 'active' }); }
     else if (act === 'logprice') { const p = prompt('Current price (dollars)?'); if (p === null) return; await api.post(`/api/ideas/${id}/price`, { price: Math.round((+p || 0) * 100) }); }
-    await loadShop(); toast('Updated');
+    const y = window.scrollY;
+    await loadShop();
+    window.scrollTo(0, y); // keep the user's scroll position after removing/updating
+    toast('Updated');
   } catch (err) { toast('Error: ' + err.message, true); }
 }
 async function saveUrl(e) { await api.put('/api/ideas/' + (+e.target.dataset.saveUrl), { product_url: e.target.value.trim() }); toast('URL saved · tracked nightly'); }
