@@ -120,6 +120,7 @@ ensureColumn('recipients', 'feedback', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('recipients', 'user_id', 'INTEGER');
 ensureColumn('recipients', 'share_token', 'TEXT');
 ensureColumn('recipients', 'share_hide_claims', 'INTEGER NOT NULL DEFAULT 0');
+ensureColumn('ideas', 'amazon_url', "TEXT NOT NULL DEFAULT ''");
 db.exec('CREATE INDEX IF NOT EXISTS idx_recipients_user ON recipients(user_id)');
 db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_recipients_share ON recipients(share_token) WHERE share_token IS NOT NULL');
 

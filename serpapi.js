@@ -61,4 +61,38 @@ async function searchShopping(query, { maxPriceCents = 0, categoryLabel = '' } =
     .filter((it) => !maxPriceCents || it.price_cents <= maxPriceCents);
 }
 
-module.exports = { serpapiEnabled, searchShopping };
+// Significant words of a product title (for matching a search result to the item).
+const AMZ_STOP = new Set(['with', 'for', 'the', 'and', 'gift', 'gifts', 'set', 'kit', 'pack', 'premium', 'new', 'oz', 'inch']);
+function sigWords(s) {
+  return new Set(String(s || '').toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length >= 3 && !AMZ_STOP.has(w)));
+}
+function overlap(a, b) { if (!a.size) return 0; let n = 0; for (const w of a) if (b.has(w)) n++; return n / a.size; }
+
+// Search Amazon for an item; return a DIRECT product link only if a result
+// genuinely matches the item (>=50% word overlap), else '' ("not really on
+// Amazon"). Cached per title so repeats never spend a search.
+async function findOnAmazon(title) {
+  if (!KEY) return '';
+  const qk = 'amz:' + normKey(title);
+  if (cache[qk] && (nowMs() - cache[qk].ts) < TTL_MS) return cache[qk].url;
+  let url = '';
+  try {
+    const u = 'https://serpapi.com/search.json?engine=amazon&k=' + encodeURIComponent(title) + '&api_key=' + KEY;
+    const j = await fetch(u).then((r) => r.json());
+    if (!j.error) {
+      const q = sigWords(title);
+      let best = null, bestScore = 0;
+      for (const p of (j.organic_results || []).slice(0, 8)) {
+        if (!p.asin || !p.title) continue;
+        const s = overlap(q, sigWords(p.title));
+        if (s > bestScore) { bestScore = s; best = p; }
+      }
+      if (best && bestScore >= 0.5) url = best.link_clean || best.link || ('https://www.amazon.com/dp/' + best.asin);
+    } else { console.error('[serpapi amazon]', j.error); }
+  } catch (e) { console.error('[serpapi amazon] fetch failed:', e.message); }
+  cache[qk] = { ts: nowMs(), url };
+  saveCache();
+  return url;
+}
+
+module.exports = { serpapiEnabled, searchShopping, findOnAmazon };

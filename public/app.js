@@ -296,6 +296,7 @@ function renderPerson() {
         <button class="btn primary" id="p-battle" ${active.length < 2 ? 'disabled' : ''}>Head-to-Head (${active.length})</button>
         <button class="btn gold" id="p-refine" ${active.length < 4 ? 'disabled' : ''} title="Keep your top 50% by Elo and replace the bottom 50% with fresh ideas">✨ Refine from winners</button>
         <button class="btn gold" id="p-generate">Generate more ideas</button>
+        <button class="btn ghost" id="p-amazon" ${active.length < 1 ? 'disabled' : ''} title="Search Amazon for your top 50 ideas and link the ones found">🛒 Find top 50 on Amazon</button>
         <button class="btn ghost" id="p-edit">Edit person</button>
         <button class="btn ghost" id="p-add">Add idea manually</button>
         <button class="btn ghost share-toggle-btn" id="share-btn" data-id="${r.id}">${r.shared ? '🔗 Manage share link' : '🔗 Share this list'}</button>
@@ -309,6 +310,17 @@ function renderPerson() {
     <div class="idea-grid">${active.map(ideaCard).join('') || '<p class="gen-note">No ideas yet. Hit Generate more ideas.</p>'}</div>
     ${purchased.length ? sectionHtml('✓ Already bought', purchased) : ''}`;
   $('#p-generate').onclick = generateFor;
+  const amzBtn = $('#p-amazon');
+  if (amzBtn) amzBtn.onclick = async () => {
+    const old = amzBtn.textContent;
+    amzBtn.disabled = true; amzBtn.innerHTML = '<span class="spinner"></span> Searching Amazon…';
+    try {
+      const res = await api.post('/api/recipients/' + r.id + '/amazon-links', {});
+      STATE.ideas = res.ideas;
+      const y = window.scrollY; renderPerson(); window.scrollTo(0, y);
+      toast(`Found ${res.found} of your top picks on Amazon`);
+    } catch (e) { toast('Amazon lookup failed: ' + e.message, true); amzBtn.disabled = false; amzBtn.textContent = old; }
+  };
   $('#p-refine').onclick = () => doRefine(false);
   $('#p-battle').onclick = () => { openBattle(r.id); showView('battle'); };
   $('#p-edit').onclick = () => openPersonEditor(r.id);
@@ -364,12 +376,14 @@ function ideaCard(i) {
   const claimBadge = (i.claims && i.claims.length)
     ? `<span class="claim-badge">Claimed by ${esc(i.claims.map((c) => c.claimer_name).join(', '))}</span>` : '';
   let actions;
+  const amazonBtn = /^https?:/.test(i.amazon_url || '')
+    ? `<a class="btn ghost sm" href="${attr(i.amazon_url)}" target="_blank" rel="noopener">Amazon</a>` : '';
   if (i.status === 'active') {
-    actions = `<a class="btn ghost sm" href="${attr(link(i))}" target="_blank" rel="noopener">View</a>
+    actions = `<a class="btn ghost sm" href="${attr(link(i))}" target="_blank" rel="noopener">View</a>${amazonBtn}
       <button class="btn gold sm" data-idea="${i.id}" data-do="list">★ Keep</button>
       <button class="btn ghost sm" data-idea="${i.id}" data-do="hide">✕</button>`;
   } else if (i.status === 'listed') {
-    actions = `<a class="btn ghost sm" href="${attr(link(i))}" target="_blank" rel="noopener">View</a>
+    actions = `<a class="btn ghost sm" href="${attr(link(i))}" target="_blank" rel="noopener">View</a>${amazonBtn}
       <button class="btn primary sm" data-idea="${i.id}" data-do="buy">✓ Bought</button>
       <button class="btn ghost sm" data-idea="${i.id}" data-do="active">Unstar</button>`;
   } else {

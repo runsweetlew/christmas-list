@@ -13,7 +13,7 @@ const { makeAuth } = require('./auth/middleware');
 const { mountAuth } = require('./auth/routes');
 const { matchCatalog } = require('./catalog_match');
 const { makeShare } = require('./share');
-const { serpapiEnabled, searchShopping } = require('./serpapi');
+const { serpapiEnabled, searchShopping, findOnAmazon } = require('./serpapi');
 
 const PORT = process.env.PORT || 3101;
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -495,6 +495,30 @@ app.post('/api/recipients/:id/generate', async (req, res) => {
   const rounds = num(req.body && req.body.rounds, 1);
   const out = await runGeneration(r, rounds);
   res.json({ ...out, ideas: Q.ideasFor.all(r.id) });
+});
+
+// For the top 50 active ideas (by Elo), look each up on Amazon and store a direct
+// product link when it genuinely matches. Cached per title, so re-running is free.
+const setAmazonUrl = db.prepare('UPDATE ideas SET amazon_url = ?, updated = ? WHERE id = ?');
+app.post('/api/recipients/:id/amazon-links', async (req, res) => {
+  const r = Q.recipient.get(num(req.params.id), req.user.id);
+  if (!r) return res.status(404).json({ error: 'not found' });
+  if (!serpapiEnabled()) return res.status(400).json({ error: 'Amazon lookup is not configured' });
+  const top = Q.ideasFor.all(r.id).filter((i) => i.status === 'active').slice(0, 50); // ideasFor is ordered by rating DESC
+  const todo = top.filter((i) => !i.amazon_url);
+  let found = 0, idx = 0;
+  const ts = nowIso();
+  async function worker() {
+    while (idx < todo.length) {
+      const it = todo[idx++];
+      let url = '';
+      try { url = await findOnAmazon(it.title); } catch (e) {}
+      setAmazonUrl.run(url || '-', ts, it.id); // '-' marks "checked, not found" so we don't recheck
+      if (url) found++;
+    }
+  }
+  await Promise.all(Array.from({ length: 6 }, worker));
+  res.json({ checked: todo.length, found, ideas: Q.ideasFor.all(r.id) });
 });
 
 const countActive = (id) => Q.ideasFor.all(id).filter((i) => i.status === 'active').length;
