@@ -13,6 +13,7 @@ const { makeAuth } = require('./auth/middleware');
 const { mountAuth } = require('./auth/routes');
 const { matchCatalog } = require('./catalog_match');
 const { makeShare } = require('./share');
+const { serpapiEnabled, searchShopping } = require('./serpapi');
 
 const PORT = process.env.PORT || 3101;
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -433,9 +434,46 @@ function selectPool(r, cat, target = POOL_TARGET, avoid = null) {
   return chosen;
 }
 
+// Live niche fill: one Google Shopping query per interest keyword returns real
+// photographed, priced, linkable products. Cached, so repeat niches are free.
+async function enrichFromSerpApi(r, avoid, cap = 70) {
+  if (!serpapiEnabled()) return [];
+  const ceiling = (Number(r.budget_max) || 20000) * 1.4;
+  let phrases = String(r.keywords || '').split(',').map((s) => s.trim()).filter((s) => s.length >= 3);
+  if (String(r.wishlist || '').trim()) phrases.push(String(r.wishlist).trim().slice(0, 40));
+  if (!phrases.length) phrases = ['gift ideas'];
+  phrases = phrases.slice(0, 5); // cap queries to protect the monthly quota
+  const perPhrase = Math.max(10, Math.ceil(cap / phrases.length)); // represent EVERY interest, not just the first
+  const seen = new Set();
+  const out = [];
+  for (const ph of phrases) {
+    const q = /gift/i.test(ph) ? ph : ph + ' gifts';
+    let items = [];
+    try { items = await searchShopping(q, { maxPriceCents: ceiling, categoryLabel: ph.replace(/\b\w/g, (c) => c.toUpperCase()) }); } catch (e) {}
+    let taken = 0;
+    for (const it of items) {
+      const k = it.title.toLowerCase();
+      if (seen.has(k) || matchesAvoid(it, avoid)) continue;
+      seen.add(k); out.push({ ...it, source: 'serpapi' }); taken++;
+      if (taken >= perPhrase || out.length >= cap) break;
+    }
+    if (out.length >= cap) break;
+  }
+  return out;
+}
+
 async function populatePool(r) {
-  if (!catalog.length) return 0;
-  const picks = selectPool(r, catalog, POOL_TARGET, recipientAvoid(r));
+  const avoid = recipientAvoid(r);
+  let picks = [];
+  // 1) live, accurately-photographed niche products from SerpApi (cached)
+  try { picks = await enrichFromSerpApi(r, avoid); } catch (e) { console.error('[serpapi enrich]', e && e.message); }
+  // 2) fill the rest from the catalog (photographed, dislike-aware) up to the target
+  if (catalog.length) {
+    const have = new Set(picks.map((p) => p.title.toLowerCase()));
+    const catPicks = selectPool(r, catalog, POOL_TARGET, avoid).filter((it) => !have.has(it.title.toLowerCase()));
+    picks = picks.concat(catPicks);
+  }
+  picks = picks.slice(0, Math.max(POOL_TARGET, picks.length));
   const ts = nowIso();
   const tx = db.transaction(() => {
     for (const it of picks) {
@@ -443,7 +481,7 @@ async function populatePool(r) {
         recipient_id: r.id, title: it.title, descr: it.descr || '', category: it.category || '',
         est_price: it.price_cents || 0, retailer: it.retailer || 'Amazon',
         search_url: it.url || amazonSearch(it.title), product_url: it.url || '',
-        image: it.image || '', source: 'pool', why: it.why || '', created: ts, updated: ts
+        image: it.image || '', source: it.source || 'pool', why: it.why || '', created: ts, updated: ts
       });
     }
   });
