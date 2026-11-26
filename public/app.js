@@ -211,7 +211,9 @@ function personFormHtml(r) {
       <div class="full"><label>Interests / keywords</label><input id="f-kw" value="${attr(r.keywords)}" placeholder="golf, grilling, whiskey, history"></div>
       <div class="full wish-field"><label>What they said they want (we go deep on this)</label>
         <textarea id="f-wish" placeholder="Their actual asks, hints, sizes, favorite brands, links they sent...">${esc(r.wishlist)}</textarea></div>
-      <div class="full fb-field"><label>Your steering notes (likes, dislikes, things to avoid)</label>
+      <div class="full avoid-field"><label>Never suggest (avoid)</label>
+        <input id="f-avoid" value="${attr(r.avoid || '')}" placeholder="coffee, cooking, baking — every term here is excluded"></div>
+      <div class="full fb-field"><label>Your steering notes (likes, dislikes)</label>
         <textarea id="f-fb" placeholder="Builds up as you give feedback in head-to-head. Edit freely.">${esc(r.feedback || '')}</textarea></div>
       <div class="full"><label>Budget per gift</label>
         <div class="budget-row">
@@ -241,6 +243,7 @@ function openPersonEditor(id) {
     const body = {
       name: $('#f-name').value, relationship: $('#f-rel').value, emoji: $('#f-emoji').value || '🎁',
       age: $('#f-age').value, gender: $('#f-gender').value, keywords: $('#f-kw').value, wishlist: $('#f-wish').value,
+      avoid: $('#f-avoid') ? $('#f-avoid').value : undefined,
       feedback: $('#f-fb') ? $('#f-fb').value : undefined,
       budget_min: Math.round((+$('#f-bmin').value || 0) * 100), budget_max: Math.round((+$('#f-bmax').value || 150) * 100)
     };
@@ -248,6 +251,7 @@ function openPersonEditor(id) {
     const changedTargeting = r && (
       body.keywords.trim() !== (r.keywords || '').trim() ||
       body.wishlist.trim() !== (r.wishlist || '').trim() ||
+      (body.avoid || '').trim() !== (r.avoid || '').trim() ||
       (body.feedback || '').trim() !== (r.feedback || '').trim() ||
       body.budget_min !== r.budget_min || body.budget_max !== r.budget_max);
     const saveLabel = saveBtn.textContent;

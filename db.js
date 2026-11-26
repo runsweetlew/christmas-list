@@ -117,6 +117,7 @@ function ensureColumn(table, col, decl) {
   if (!cols.includes(col)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${decl}`);
 }
 ensureColumn('recipients', 'feedback', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('recipients', 'avoid', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('recipients', 'user_id', 'INTEGER');
 ensureColumn('recipients', 'share_token', 'TEXT');
 ensureColumn('recipients', 'share_hide_claims', 'INTEGER NOT NULL DEFAULT 0');

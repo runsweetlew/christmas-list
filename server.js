@@ -11,8 +11,9 @@ const { makeUsers } = require('./auth/users');
 const { makeSessions } = require('./auth/sessions');
 const { makeAuth } = require('./auth/middleware');
 const { mountAuth } = require('./auth/routes');
-const { matchCatalog } = require('./catalog_match');
-const { genderWants, genderTextMismatch, genderQuerySuffix } = require('./gender');
+const { genderTextMismatch, genderQuerySuffix } = require('./gender');
+const { selectPool, matchesAvoid } = require('./pool');
+const { avoidFieldTerms, buildAvoidRx } = require('./avoid');
 const { makeShare } = require('./share');
 const { serpapiEnabled, searchShopping, findOnAmazon } = require('./serpapi');
 
@@ -55,11 +56,11 @@ const Q = {
   recipients: db.prepare('SELECT * FROM recipients WHERE user_id = ? ORDER BY sort, id'),
   recipient: db.prepare('SELECT * FROM recipients WHERE id = ? AND user_id = ?'),
   insRecipient: db.prepare(`INSERT INTO recipients
-    (user_id, name, relationship, emoji, age, gender, keywords, wishlist, feedback, budget_min, budget_max, sort, created, updated)
-    VALUES (@user_id,@name,@relationship,@emoji,@age,@gender,@keywords,@wishlist,@feedback,@budget_min,@budget_max,@sort,@created,@updated)`),
+    (user_id, name, relationship, emoji, age, gender, keywords, wishlist, feedback, avoid, budget_min, budget_max, sort, created, updated)
+    VALUES (@user_id,@name,@relationship,@emoji,@age,@gender,@keywords,@wishlist,@feedback,@avoid,@budget_min,@budget_max,@sort,@created,@updated)`),
   updRecipient: db.prepare(`UPDATE recipients SET
     name=@name, relationship=@relationship, emoji=@emoji, age=@age, gender=@gender,
-    keywords=@keywords, wishlist=@wishlist, feedback=@feedback, budget_min=@budget_min, budget_max=@budget_max, updated=@updated
+    keywords=@keywords, wishlist=@wishlist, feedback=@feedback, avoid=@avoid, budget_min=@budget_min, budget_max=@budget_max, updated=@updated
     WHERE id=@id`),
   appendFeedback: db.prepare(`UPDATE recipients SET feedback=@feedback, updated=@updated WHERE id=@id`),
   delRecipient: db.prepare('DELETE FROM recipients WHERE id = ?'),
@@ -157,6 +158,7 @@ function cleanRecipient(body) {
     keywords: str(body.keywords, 800),
     wishlist: str(body.wishlist, 1500),
     feedback: str(body.feedback, 2000),
+    avoid: str(body.avoid, 800),
     budget_min: Math.max(0, num(body.budget_min, 0)),
     budget_max: Math.max(100, num(body.budget_max, 20000))
   };
@@ -186,16 +188,19 @@ app.put('/api/recipients/:id', (req, res) => {
   const r = Q.recipient.get(num(req.params.id), req.user.id);
   if (!r) return res.status(404).json({ error: 'not found' });
   const c = cleanRecipient(req.body || {});
-  // preserve accumulated feedback unless explicitly provided
+  // preserve accumulated feedback / avoid unless explicitly provided
   const fbProvided = req.body.feedback !== undefined;
   if (!fbProvided) c.feedback = r.feedback || '';
+  if (req.body.avoid === undefined) c.avoid = r.avoid || '';
   Q.updRecipient.run({ ...c, id: r.id, updated: nowIso() });
-  // if the steering notes changed, purge existing ideas that match the avoid terms
+  const fresh = Q.recipient.get(r.id, req.user.id);
+  // if the avoid field or steering notes changed, purge existing active ideas that
+  // now match any of the recipient's avoid terms (dedicated field + notes).
   let purged = 0;
-  if (fbProvided && (c.feedback || '').trim() !== (r.feedback || '').trim()) {
-    purged = purgeAvoid(r.id, c.feedback).purged;
-  }
-  res.json({ recipient: recipientPayload(Q.recipient.get(r.id, req.user.id)), purged });
+  const feedbackChanged = fbProvided && (c.feedback || '').trim() !== (r.feedback || '').trim();
+  const avoidChanged = (c.avoid || '').trim() !== (r.avoid || '').trim();
+  if (feedbackChanged || avoidChanged) purged = purgeByAvoid(fresh).purged;
+  res.json({ recipient: recipientPayload(fresh), purged });
 });
 
 app.delete('/api/recipients/:id', (req, res) => {
@@ -305,7 +310,11 @@ async function runGeneration(r, rounds, liked) {
   const catCount = {};
   for (const b of banished) { if (b.category) catCount[b.category] = (catCount[b.category] || 0) + 1; }
   const rejCats = Object.entries(catCount).filter(([, n]) => n >= 2).sort((a, b) => b[1] - a[1]).map((e) => e[0]).slice(0, 8);
+  // the dedicated avoid field is an explicit, absolute "do not suggest" list
+  for (const t of avoidFieldTerms(r.avoid || '')) if (!rejCats.includes(t)) rejCats.push(t);
   const rejected = { titles: rejTitles, cats: rejCats };
+  // regex to drop any generated idea that still lands on an avoid term
+  const avoidRx = recipientAvoid(r).termRx;
   // Run all rounds concurrently so N rounds take ~1 call of latency instead of N.
   const avoid = Array.from(seen);
   const results = await Promise.all(Array.from({ length: rounds }, () => generateIdeas(r, avoid, liked, rejected)));
@@ -323,6 +332,7 @@ async function runGeneration(r, rounds, liked) {
     const k = it.title.toLowerCase();
     if (seen.has(k)) continue;
     if (genderTextMismatch((it.title || '') + ' ' + (it.category || '') + ' ' + (it.descr || ''), r.gender)) continue;
+    if (avoidRx && avoidRx.test((it.title || '') + ' ' + (it.category || '') + ' ' + (it.descr || ''))) continue;
     seen.add(k); fresh.push(it);
   }
   // give generated ideas a real photo AND a matching product link from the same
@@ -401,47 +411,15 @@ function recipientAvoid(r) {
     }
   }
   const terms = Object.entries(bag).filter(([, n]) => n >= 2).map(([w]) => w);
-  // also honor explicit avoid-terms from steering notes
+  // the dedicated "never suggest (avoid)" field: every listed term is absolute
+  for (const t of avoidFieldTerms(r.avoid || '')) if (!terms.includes(t)) terms.push(t);
+  // also honor explicit avoid-terms from free-text steering notes ("no X", "less X")
   for (const t of extractAvoidTerms(r.feedback || '')) if (!isInterest(t) && !terms.includes(t)) terms.push(t);
-  const termRx = terms.length ? new RegExp('\\b(' + terms.map(escapeRx).join('|') + ')', 'i') : null;
+  const termRx = buildAvoidRx(terms);
   return { terms, termRx };
 }
-function matchesAvoid(it, avoid) {
-  if (!avoid || !avoid.termRx) return false;
-  return avoid.termRx.test((it.title || '') + ' ' + (it.category || '') + ' ' + (it.descr || ''));
-}
 
-function selectPool(r, cat, target = POOL_TARGET, avoid = null) {
-  const { wantM, wantF } = genderWants(r.gender);
-  const hay = ((r.relationship || '') + ' ' + (r.keywords || '') + ' ' + (r.name || '')).toLowerCase();
-  const dog = /\bdogs?\b|\bpuppy\b/.test(hay);
-  const ceiling = (Number(r.budget_max) || 20000) * 1.4;
-  const okTag = (i) => {
-    if (matchesAvoid(i, avoid)) return false; // never fill in a disliked category/term
-    const t = i.tags || [];
-    if (dog) return t.includes('dogs');
-    if (t.includes('dogs')) return false;
-    const neutral = t.includes('unisex') || t.includes('anyone');
-    if (wantM && t.includes('women') && !t.includes('men') && !neutral) return false;
-    if (wantF && t.includes('men') && !t.includes('women') && !neutral) return false;
-    return true;
-  };
-  const okBudget = (i) => !i.price_cents || i.price_cents <= ceiling;
-  const seen = new Set();
-  const chosen = [];
-  const add = (it) => { const k = it.title.toLowerCase(); if (seen.has(k)) return; seen.add(k); chosen.push(it); };
-  // 1) interest matches that have a photo
-  const matched = matchCatalog(r, cat, 400);
-  for (const it of matched) { if (chosen.length >= target) break; if (it.image && okTag(it) && okBudget(it)) add(it); }
-  // 2) fill with photographed, appropriate items (broadly-giftable first)
-  const photographed = cat.filter((i) => i.image && okTag(i) && okBudget(i));
-  const fill = photographed.filter((i) => (i.tags || []).includes('anyone'))
-    .concat(photographed.filter((i) => !(i.tags || []).includes('anyone')));
-  for (const it of fill) { if (chosen.length >= target) break; add(it); }
-  // 3) last resort if the catalog is tiny: interest matches without a photo
-  for (const it of matched) { if (chosen.length >= target) break; if (okTag(it) && okBudget(it)) add(it); }
-  return chosen;
-}
+// selectPool / matchesAvoid live in ./pool (imported above) so they stay unit-tested.
 
 // Live niche fill: one Google Shopping query per interest keyword returns real
 // photographed, priced, linkable products. Cached, so repeat niches are free.
@@ -600,6 +578,21 @@ function purgeAvoid(recipientId, text) {
   db.transaction(() => {
     for (const it of act) {
       if (rx.test(it.title + ' ' + it.category + ' ' + it.descr)) { Q.setStatus.run({ id: it.id, status: 'hidden', updated: ts }); purged++; }
+    }
+  })();
+  return { purged, terms };
+}
+// Hide active ideas that match ALL of a recipient's avoid terms (dedicated avoid
+// field + negative steering notes + repeatedly-banished categories).
+function purgeByAvoid(r) {
+  const { termRx, terms } = recipientAvoid(r);
+  if (!termRx) return { purged: 0, terms };
+  const act = Q.ideasFor.all(r.id).filter((i) => i.status === 'active');
+  const ts = nowIso();
+  let purged = 0;
+  db.transaction(() => {
+    for (const it of act) {
+      if (termRx.test(it.title + ' ' + it.category + ' ' + it.descr)) { Q.setStatus.run({ id: it.id, status: 'hidden', updated: ts }); purged++; }
     }
   })();
   return { purged, terms };

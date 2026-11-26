@@ -13,6 +13,7 @@ async function main() {
   const jar = (res) => { const sc = res.headers.get('set-cookie'); if (sc) cookie = sc.split(';')[0]; };
   const j = (res) => res.json();
   const post = (p, b) => fetch(BASE + p, { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: cookie }, body: JSON.stringify(b) });
+  const put = (p, b) => fetch(BASE + p, { method: 'PUT', headers: { 'Content-Type': 'application/json', Cookie: cookie }, body: JSON.stringify(b) });
   const get = (p) => fetch(BASE + p, { headers: { Cookie: cookie } });
   try {
     let r = await post('/api/auth/signup', { email: 'a@test.com', password: 'password1', name: 'A' }); jar(r);
@@ -46,6 +47,16 @@ async function main() {
     sh(pub2.items.length >= 1, 'listed item appears on share page');
     const cl = await fetch(BASE + '/api/share/' + token + '/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ideaId: pub2.items[0].id, name: 'Grandma' }) });
     sh((await cl.json()).claims.length === 1, 'claim recorded');
+    // dedicated avoid field purges matching active ideas and keeps them out
+    r = await post('/api/recipients', { name: 'AvoidTest', keywords: 'golf', budget_max: 20000 });
+    const at = (await j(r)).recipient;
+    await post('/api/recipients/' + at.id + '/ideas', { title: 'Nordic Ware Bundt Pan', category: 'Baking', est_price: 3000 });
+    r = await put('/api/recipients/' + at.id, { name: 'AvoidTest', keywords: 'golf', avoid: 'baking' });
+    const av = await j(r);
+    sh(av.purged >= 1, 'avoid field purges matching active ideas on save');
+    const activeNow = ((await (await get('/api/recipients/' + at.id)).json()).ideas || []).filter((i) => i.status === 'active');
+    sh(!activeNow.some((i) => /baking/i.test(i.title + ' ' + i.category)), 'no baking items remain active after avoid');
+
     console.log('\nSMOKE PASSED');
     srv.kill(); process.exit(0);
   } catch (e) { console.error(e); srv.kill(); process.exit(1); }
