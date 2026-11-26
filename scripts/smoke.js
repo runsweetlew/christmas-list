@@ -20,7 +20,14 @@ async function main() {
     r = await get('/api/auth/me'); sh((await j(r)).user.email === 'a@test.com', 'me after signup');
     r = await get('/api/state'); sh((await j(r)).recipients.length === 0, 'fresh account has no recipients');
     r = await post('/api/recipients', { name: 'Dad', keywords: 'grilling, tools, outdoors', budget_max: 20000 });
-    const rec = (await j(r)).recipient; sh(rec.counts.ideas > 0, 'new recipient pool populated from catalog');
+    const rec = (await j(r)).recipient; sh(rec && rec.id, 'new recipient created and acknowledged immediately');
+    // Pool is filled in the background now; poll briefly until ideas land.
+    let poolCount = 0;
+    for (let i = 0; i < 30 && poolCount === 0; i++) {
+      await new Promise((rr) => setTimeout(rr, 200));
+      poolCount = ((await (await get('/api/recipients/' + rec.id)).json()).ideas || []).length;
+    }
+    sh(poolCount > 0, 'new recipient pool populated from catalog (background)');
     r = await post('/api/recipients/' + rec.id + '/share', {}); const share = await j(r);
     sh(/\/share\//.test(share.url), 'share link minted');
     // second user cannot see the first user's recipient

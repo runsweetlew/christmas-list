@@ -236,6 +236,8 @@ function openPersonEditor(id) {
     b.classList.add('sel');
   });
   $('#f-save').onclick = async () => {
+    const saveBtn = $('#f-save');
+    if (saveBtn.disabled) return; // guard against double-submit
     const body = {
       name: $('#f-name').value, relationship: $('#f-rel').value, emoji: $('#f-emoji').value || '🎁',
       age: $('#f-age').value, gender: $('#f-gender').value, keywords: $('#f-kw').value, wishlist: $('#f-wish').value,
@@ -248,6 +250,9 @@ function openPersonEditor(id) {
       body.wishlist.trim() !== (r.wishlist || '').trim() ||
       (body.feedback || '').trim() !== (r.feedback || '').trim() ||
       body.budget_min !== r.budget_min || body.budget_max !== r.budget_max);
+    const saveLabel = saveBtn.textContent;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="spinner"></span> ' + (id ? 'Saving...' : 'Adding ' + esc(body.name || 'person') + '...');
     try {
       if (id) await api.put('/api/recipients/' + id, body); else await api.post('/api/recipients', body);
       closeModal();
@@ -263,7 +268,11 @@ function openPersonEditor(id) {
       } else {
         await loadList(); showView('list'); toast('Added');
       }
-    } catch (err) { toast('Could not save: ' + err.message, true); }
+    } catch (err) {
+      toast('Could not save: ' + err.message, true);
+      // modal is still open on failure: re-enable the button so they can retry
+      if (saveBtn && document.body.contains(saveBtn)) { saveBtn.disabled = false; saveBtn.textContent = saveLabel; }
+    }
   };
   if (id) $('#f-delete').onclick = async () => {
     if (!confirm('Delete this person and all their gift ideas?')) return;

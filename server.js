@@ -12,6 +12,7 @@ const { makeSessions } = require('./auth/sessions');
 const { makeAuth } = require('./auth/middleware');
 const { mountAuth } = require('./auth/routes');
 const { matchCatalog } = require('./catalog_match');
+const { genderWants, genderTextMismatch, genderQuerySuffix } = require('./gender');
 const { makeShare } = require('./share');
 const { serpapiEnabled, searchShopping, findOnAmazon } = require('./serpapi');
 
@@ -167,8 +168,11 @@ app.post('/api/recipients', async (req, res) => {
   const maxSort = db.prepare('SELECT COALESCE(MAX(sort),0)+1 AS s FROM recipients WHERE user_id = ?').get(req.user.id).s;
   const ins = Q.insRecipient.run({ ...c, user_id: req.user.id, sort: maxSort, created: ts, updated: ts });
   const r = Q.recipient.get(ins.lastInsertRowid, req.user.id);
-  await populatePool(r); // Task 11
+  // Acknowledge the new person immediately. Filling the head-to-head pool can
+  // take several seconds (live product lookups), so do it in the background;
+  // openPerson()'s autoFillIfThin tops up the pool when they open the card.
   res.json({ recipient: recipientPayload(r) });
+  populatePool(r).catch((e) => console.error('[populatePool]', e && e.message));
 });
 
 app.post('/api/sample-people', async (req, res) => {
@@ -311,9 +315,16 @@ async function runGeneration(r, rounds, liked) {
     if (error) lastError = error;
     if (ideas && ideas.length) all.push(...ideas);
   }
-  // dedup against what the recipient already has / within this batch
+  // dedup against what the recipient already has / within this batch, and drop
+  // any idea whose wording clearly targets the opposite gender (safety net in
+  // case the model ignores the recipient's gender).
   const fresh = [];
-  for (const it of all) { const k = it.title.toLowerCase(); if (seen.has(k)) continue; seen.add(k); fresh.push(it); }
+  for (const it of all) {
+    const k = it.title.toLowerCase();
+    if (seen.has(k)) continue;
+    if (genderTextMismatch((it.title || '') + ' ' + (it.category || '') + ' ' + (it.descr || ''), r.gender)) continue;
+    seen.add(k); fresh.push(it);
+  }
   // give generated ideas a real photo AND a matching product link from the same
   // search result, so the link and photo are consistent and accurate.
   let imgMap = new Map();
@@ -401,9 +412,7 @@ function matchesAvoid(it, avoid) {
 }
 
 function selectPool(r, cat, target = POOL_TARGET, avoid = null) {
-  const g = (r.gender || '').toLowerCase();
-  const wantF = /^f|female|woman|women/.test(g);
-  const wantM = /^m|male|man|men/.test(g);
+  const { wantM, wantF } = genderWants(r.gender);
   const hay = ((r.relationship || '') + ' ' + (r.keywords || '') + ' ' + (r.name || '')).toLowerCase();
   const dog = /\bdogs?\b|\bpuppy\b/.test(hay);
   const ceiling = (Number(r.budget_max) || 20000) * 1.4;
@@ -446,14 +455,18 @@ async function enrichFromSerpApi(r, avoid, cap = 70) {
   const perPhrase = Math.max(10, Math.ceil(cap / phrases.length)); // represent EVERY interest, not just the first
   const seen = new Set();
   const out = [];
+  const genderSuffix = genderQuerySuffix(r.gender); // '' when no/neutral gender
   for (const ph of phrases) {
-    const q = /gift/i.test(ph) ? ph : ph + ' gifts';
+    const q = (/gift/i.test(ph) ? ph : ph + ' gifts') + genderSuffix;
     let items = [];
     try { items = await searchShopping(q, { maxPriceCents: ceiling, categoryLabel: ph.replace(/\b\w/g, (c) => c.toUpperCase()) }); } catch (e) {}
     let taken = 0;
     for (const it of items) {
       const k = it.title.toLowerCase();
       if (seen.has(k) || matchesAvoid(it, avoid)) continue;
+      // Shopping results are free text with no gender tags: drop anything whose
+      // wording clearly targets the opposite gender (women's items for a man, etc.)
+      if (genderTextMismatch((it.title || '') + ' ' + (it.category || ''), r.gender)) continue;
       seen.add(k); out.push({ ...it, source: 'serpapi' }); taken++;
       if (taken >= perPhrase || out.length >= cap) break;
     }
